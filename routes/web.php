@@ -16,7 +16,7 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\BesiController;
 use App\Http\Controllers\TimbanganController;
-
+use App\Http\Controllers\DashboardController;
 
 
 /*
@@ -50,9 +50,9 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::middleware(['auth'])->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->middleware('verified')->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->middleware('verified')
+        ->name('dashboard');
 
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
