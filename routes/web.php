@@ -17,6 +17,7 @@ use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\BesiController;
 use App\Http\Controllers\TimbanganController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotaController;
 
 
 /*
@@ -118,6 +119,15 @@ Route::middleware(['auth'])->group(function () {
 
 
 });
+
+Route::prefix('nota')->group(function () {
+    Route::get('/nota', [App\Http\Controllers\NotaController::class, 'index'])
+        ->name('nota.index');
+
+    Route::post('/nota', [App\Http\Controllers\NotaController::class, 'store'])
+        ->name('nota.store');
+});
+
 
 /*
 |--------------------------------------------------------------------------
