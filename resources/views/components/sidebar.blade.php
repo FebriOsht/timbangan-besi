@@ -47,7 +47,7 @@
 
         <li class="mt-4"><a href="{{ route('timbangan') }}" class="block px-3 py-2 hover:bg-green-600 rounded">Input Timbangan</a></li>
         <li><a href="{{ route('nota.index') }}" class="block px-3 py-2 hover:bg-green-600 rounded">Nota</a></li>
-        <li><a href="#" class="block px-3 py-2 hover:bg-green-600 rounded">Mutasi Stok</a></li>
+        <li><a href="{{ route('admin.mutasi_stock.index') }}" class="block px-3 py-2 hover:bg-green-600 rounded">Mutasi Stok</a></li>
         <li><a href="#" class="block px-3 py-2 hover:bg-green-600 rounded">Stok Opname</a></li>
         <li><a href="#" class="block px-3 py-2 hover:bg-green-600 rounded">Laporan</a></li>
 

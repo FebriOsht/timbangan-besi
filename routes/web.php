@@ -18,6 +18,10 @@ use App\Http\Controllers\BesiController;
 use App\Http\Controllers\TimbanganController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotaController;
+use App\Http\Controllers\MutasiStockController;
+
+
+
 
 
 /*
@@ -130,20 +134,9 @@ Route::prefix('nota')->group(function () {
 Route::get('/admin/nota/cetak', [NotaController::class, 'cetak'])
     ->name('admin.nota.cetak');
 
-
-
-// Route::prefix('admin/nota')->name('admin.nota.')->group(function () {
-
-//     // GET: Halaman daftar nota
-//     Route::get('/', [NotaController::class, 'index'])->name('index');
-
-//     // POST: Simpan nota
-//     Route::post('/', [NotaController::class, 'store'])->name('store');
-
-//     // GET: Halaman cetak nota
-//     Route::get('/cetak', [NotaController::class, 'cetak'])->name('cetak');
-
-// });
+// mutasi stock
+Route::get('/admin/mutasi-stock', [MutasiStockController::class, 'index'])
+     ->name('admin.mutasi_stock.index');
 
 
 
