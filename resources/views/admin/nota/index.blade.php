@@ -151,9 +151,11 @@
 
 
 
-            <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-                Simpan & Cetak Nota
-            </button>
+           <a href="{{ route('admin.nota.cetak') }}"
+   class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 inline-block">
+    Simpan & Cetak Nota
+</a>
+
 
         </div>
 

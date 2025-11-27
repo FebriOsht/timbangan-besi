@@ -32,4 +32,9 @@ class NotaController extends Controller
 
         return redirect()->back()->with('success', 'Nota berhasil disimpan.');
     }
+    public function cetak()
+{
+    return view('admin.nota.cetak_nota');
+}
+
 }

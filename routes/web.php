@@ -127,6 +127,24 @@ Route::prefix('nota')->group(function () {
     Route::post('/nota', [App\Http\Controllers\NotaController::class, 'store'])
         ->name('nota.store');
 });
+Route::get('/admin/nota/cetak', [NotaController::class, 'cetak'])
+    ->name('admin.nota.cetak');
+
+
+
+// Route::prefix('admin/nota')->name('admin.nota.')->group(function () {
+
+//     // GET: Halaman daftar nota
+//     Route::get('/', [NotaController::class, 'index'])->name('index');
+
+//     // POST: Simpan nota
+//     Route::post('/', [NotaController::class, 'store'])->name('store');
+
+//     // GET: Halaman cetak nota
+//     Route::get('/cetak', [NotaController::class, 'cetak'])->name('cetak');
+
+// });
+
 
 
 /*
