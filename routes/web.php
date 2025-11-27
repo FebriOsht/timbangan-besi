@@ -19,6 +19,10 @@ use App\Http\Controllers\TimbanganController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotaController;
 use App\Http\Controllers\MutasiStockController;
+use App\Http\Controllers\StockOpnameController;
+
+
+
 
 
 
@@ -137,6 +141,12 @@ Route::get('/admin/nota/cetak', [NotaController::class, 'cetak'])
 // mutasi stock
 Route::get('/admin/mutasi-stock', [MutasiStockController::class, 'index'])
      ->name('admin.mutasi_stock.index');
+
+// stock opname
+Route::prefix('admin')->group(function () {
+    Route::get('/stock-opname', [StockOpnameController::class, 'index'])
+        ->name('admin.stock-opname.index');
+});
 
 
 
