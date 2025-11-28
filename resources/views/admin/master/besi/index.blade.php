@@ -87,14 +87,21 @@
          x-transition.opacity 
          class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
 
-        <div class="bg-white p-6 rounded shadow-lg w-96" @click.outside="addModal = false">
+        <div class="bg-white p-6 rounded shadow-lg w-96 relative" @click.outside="addModal = false">
+
+            <!-- CLOSE BUTTON -->
+            <button @click="addModal = false" class="absolute top-2 right-2 text-gray-500 hover:text-black">
+                ✕
+            </button>
+
             <h2 class="font-bold mb-4">Tambah Besi</h2>
 
             <form action="{{ route('master.besi.store') }}" method="POST">
                 @csrf
 
-                <label>ID / Kode</label>
-                <input type="text" name="kode" class="w-full border p-2 rounded mb-3" required>
+                <p class="text-sm text-gray-600 mb-3">
+                    Kode besi akan dibuat otomatis saat disimpan.
+                </p>
 
                 <label>Nama</label>
                 <input type="text" name="nama" class="w-full border p-2 rounded mb-3" required>
@@ -113,7 +120,6 @@
                 </button>
             </form>
 
-            <button @click="addModal = false" class="mt-2 text-sm text-gray-500">Tutup</button>
         </div>
     </div>
 
@@ -122,20 +128,26 @@
          x-transition.opacity 
          class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
 
-        <div class="bg-white p-6 rounded shadow-lg w-96" @click.outside="editModal = false">
+        <div class="bg-white p-6 rounded shadow-lg w-96 relative" @click.outside="editModal = false">
+
+            <!-- CLOSE BUTTON -->
+            <button @click="editModal = false" class="absolute top-2 right-2 text-gray-500 hover:text-black">
+                ✕
+            </button>
+
             <h2 class="font-bold mb-4">Edit Besi</h2>
 
             <form :action="'/master/besi/' + editId" method="POST">
                 @csrf @method('PUT')
 
                 <label>ID / Kode</label>
-                <input type="text" name="kode" x-model="editKode" class="w-full border p-2 rounded mb-3">
+                <input type="text" name="kode" x-model="editKode" class="w-full border p-2 rounded mb-3 bg-gray-100" readonly>
 
                 <label>Nama</label>
-                <input type="text" name="nama" x-model="editNama" class="w-full border p-2 rounded mb-3">
+                <input type="text" name="nama" x-model="editNama" class="w-full border p-2 rounded mb-3 bg-gray-100" readonly>
 
                 <label>Jenis</label>
-                <input type="text" name="jenis" x-model="editJenis" class="w-full border p-2 rounded mb-3">
+                <input type="text" name="jenis" x-model="editJenis" class="w-full border p-2 rounded mb-3 bg-gray-100" readonly>
 
                 <label>Harga/kg</label>
                 <input type="number" name="harga" x-model="editHarga" class="w-full border p-2 rounded mb-3">
@@ -148,7 +160,6 @@
                 </button>
             </form>
 
-            <button @click="editModal = false" class="mt-2 text-sm text-gray-500">Tutup</button>
         </div>
     </div>
 
@@ -174,7 +185,29 @@ function confirmDelete(formId) {
         }
     });
 }
+
+// ALERT KHUSUS SUCCESS (JIKA ADA SESSION)
+@if(session('success_kode'))
+Swal.fire({
+    title: "Kode Besi Dibuat!",
+    text: "Kode: {{ session('success_kode') }}",
+    icon: "success",
+    confirmButtonColor: "#16a34a"
+});
+@endif
+// =========================
+// ALERT UPDATE (success_update)
+// =========================
+@if(session('success_update'))
+Swal.fire({
+    title: "Berhasil Diperbarui!",
+    text: "Kode besi {{ session('success_update') }} berhasil diupdate!",
+    icon: "success",
+    confirmButtonColor: "#16a34a"
+});
+@endif
 </script>
+
 @endpush
 
 </x-admin-layout>
