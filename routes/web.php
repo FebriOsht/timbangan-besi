@@ -16,6 +16,15 @@ use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\DiskonController;
 use App\Http\Controllers\BesiController;
 use App\Http\Controllers\TimbanganController;
+use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\NotaController;
+use App\Http\Controllers\MutasiStockController;
+use App\Http\Controllers\StockOpnameController;
+
+
+
+
+
 
 
 
@@ -50,9 +59,9 @@ Route::post('/register', [RegisteredUserController::class, 'store']);
 Route::middleware(['auth'])->group(function () {
 
     // Dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard');
-    })->middleware('verified')->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])
+        ->middleware('verified')
+        ->name('dashboard');
 
     // Profile Routes
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -118,6 +127,28 @@ Route::middleware(['auth'])->group(function () {
 
 
 });
+
+Route::prefix('nota')->group(function () {
+    Route::get('/nota', [App\Http\Controllers\NotaController::class, 'index'])
+        ->name('nota.index');
+
+    Route::post('/nota', [App\Http\Controllers\NotaController::class, 'store'])
+        ->name('nota.store');
+});
+Route::get('/admin/nota/cetak', [NotaController::class, 'cetak'])
+    ->name('admin.nota.cetak');
+
+// mutasi stock
+Route::get('/admin/mutasi-stock', [MutasiStockController::class, 'index'])
+     ->name('admin.mutasi_stock.index');
+
+// stock opname
+Route::prefix('admin')->group(function () {
+    Route::get('/stock-opname', [StockOpnameController::class, 'index'])
+        ->name('admin.stock-opname.index');
+});
+
+
 
 /*
 |--------------------------------------------------------------------------

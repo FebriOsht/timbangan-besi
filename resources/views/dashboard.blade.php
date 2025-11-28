@@ -5,7 +5,7 @@
 
         <div class="bg-green-600 text-white p-5 rounded-lg">
             <p class="text-sm">Total Stok Saat Ini</p>
-            <h3 class="text-3xl font-bold mt-2">0</h3>
+            <h3 class="text-3xl font-bold mt-2">{{ $totalBesiBerstock }}</h3>
             <p class="text-xs opacity-80">besi</p>
         </div>
 
