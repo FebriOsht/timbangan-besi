@@ -20,6 +20,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\NotaController;
 use App\Http\Controllers\MutasiStockController;
 use App\Http\Controllers\StockOpnameController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\UserSettingController;
 
 
 
@@ -147,6 +149,21 @@ Route::prefix('admin')->group(function () {
     Route::get('/stock-opname', [StockOpnameController::class, 'index'])
         ->name('admin.stock-opname.index');
 });
+
+// Laporan
+
+
+Route::prefix('admin')->group(function () {
+
+    // Halaman Rekap Harian
+    Route::get('/laporan', [LaporanController::class, 'index'])->name('admin.laporan.index');
+
+});
+
+// User Setting
+Route::get('/admin/user-setting', [UserSettingController::class, 'index'])
+    ->name('admin.user_setting.index');
+
 
 
 
