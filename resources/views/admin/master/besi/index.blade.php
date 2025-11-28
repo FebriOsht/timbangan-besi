@@ -166,9 +166,27 @@
 </div>
 
 @push('scripts')
+<!-- SWEETALERT -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+{{-- <!-- JQUERY (WAJIB UNTUK DATATABLES) -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
+<!-- DATATABLES -->
+<script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.5/js/dataTables.tailwindcss.min.js"></script> --}}
+
 <script>
+// $(document).ready(function() {
+//     $('#tabel-besi').DataTable({
+//         order: [[0, 'desc']],   // default: data terbaru paling atas
+//         scrollY: '350px',
+//         scrollCollapse: true,
+//         paging: false
+//     });
+// });
+
+// KONFIRMASI DELETE
 function confirmDelete(formId) {
     Swal.fire({
         title: "Yakin ingin menghapus?",
@@ -186,7 +204,6 @@ function confirmDelete(formId) {
     });
 }
 
-// ALERT KHUSUS SUCCESS (JIKA ADA SESSION)
 @if(session('success_kode'))
 Swal.fire({
     title: "Kode Besi Dibuat!",
@@ -195,9 +212,7 @@ Swal.fire({
     confirmButtonColor: "#16a34a"
 });
 @endif
-// =========================
-// ALERT UPDATE (success_update)
-// =========================
+
 @if(session('success_update'))
 Swal.fire({
     title: "Berhasil Diperbarui!",
@@ -207,7 +222,7 @@ Swal.fire({
 });
 @endif
 </script>
-
 @endpush
+
 
 </x-admin-layout>

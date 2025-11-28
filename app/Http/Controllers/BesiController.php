@@ -11,6 +11,7 @@ class BesiController extends Controller
     public function index()
     {
         $data = Besi::all();
+            $data = Besi::orderBy('created_at', 'desc')->get();
         return view('admin.master.besi.index', compact('data'));
     }
 
