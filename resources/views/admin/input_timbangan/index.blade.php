@@ -129,6 +129,10 @@
             <label class="font-semibold">Harga/kg</label>
             <input type="number" name="harga" x-model="harga" 
                    class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+            
+            <label class="font-semibold">Sisa stok</label>
+            <input type="number" name="stok" x-model="stok" 
+                   class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
 
             <label class="font-semibold">Berat (kg)</label>
             <input type="number" name="berat" class="w-full border p-2 rounded mb-3" required>
@@ -334,6 +338,7 @@ function notaBesi(){
             this.nama=item.nama;
             this.jenis=item.jenis;
             this.harga=item.harga;
+            this.stok=item.stok;
             this.besi_id = item.id;
             this.searchQuery=item.nama;
             this.searchResults=[];

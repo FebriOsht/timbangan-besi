@@ -33,6 +33,9 @@ class TimbanganController extends Controller
         return $prefix . $year . $month . str_pad($number, 3, '0', STR_PAD_LEFT);
     }
 
+    /**
+     * STORE (dengan update stok otomatis)
+     */
     public function store(Request $request)
     {
         $request->validate([
@@ -41,24 +44,38 @@ class TimbanganController extends Controller
             'status'  => 'required|in:Barang Masuk,Barang Keluar',
         ]);
 
-        // Ambil data besi
         $besi = Besi::findOrFail($request->besi_id);
 
-        // Generate Kode
+        // Status langsung disimpan sesuai enum
+        $status = $request->status;
+
+        // Update stok otomatis
+        if ($status === "Barang Masuk") {
+            $besi->stok += $request->berat;
+        } else {
+            if ($besi->stok < $request->berat) {
+                return back()->with('error', 'Stok tidak mencukupi!');
+            }
+            $besi->stok -= $request->berat;
+        }
+        $besi->save();
+
         $kode = $this->generateKode();
 
-        // Simpan
-        $timbangan = Timbangan::create([
+        Timbangan::create([
             'kode'    => $kode,
             'besi_id' => $besi->id,
             'berat'   => $request->berat,
-            'harga'   => $besi->harga, // harga disimpan agar tidak berubah ketika harga besi naik
-            'status'  => $request->status
+            'harga'   => $besi->harga,
+            'status'  => $status
         ]);
 
         return back()->with('success', "Timbangan dengan kode $kode berhasil ditambahkan");
     }
 
+    /**
+     * UPDATE TIMBANGAN
+     */
     public function update(Request $request, $id)
     {
         $request->validate([
@@ -69,25 +86,69 @@ class TimbanganController extends Controller
 
         $t = Timbangan::findOrFail($id);
 
-        // Ambil harga baru dari tabel besi
-        $besi = Besi::findOrFail($request->besi_id);
+        $oldBesi = Besi::findOrFail($t->besi_id);
+        $newBesi = Besi::findOrFail($request->besi_id);
 
+        $newStatus = $request->status;
+
+        /** 
+         * Balikkan efek lama terhadap stok
+         */
+        if ($t->status === "Barang Masuk") {
+            $oldBesi->stok -= $t->berat;
+        } else {
+            $oldBesi->stok += $t->berat;
+        }
+        $oldBesi->save();
+
+        /**
+         * Terapkan stok baru
+         */
+        if ($newStatus === "Barang Masuk") {
+            $newBesi->stok += $request->berat;
+        } else {
+            if ($newBesi->stok < $request->berat) {
+                return back()->with('error', 'Stok tidak mencukupi!');
+            }
+            $newBesi->stok -= $request->berat;
+        }
+        $newBesi->save();
+
+        // Update data
         $t->update([
-            'besi_id' => $request->besi_id,
+            'besi_id' => $newBesi->id,
             'berat'   => $request->berat,
-            'harga'   => $besi->harga,
-            'status'  => $request->status
+            'harga'   => $newBesi->harga,
+            'status'  => $newStatus
         ]);
 
-        return back()->with('success', "Timbangan dengan ID $t->kode berhasil diupdate");
+        return back()->with('success', "Timbangan $t->kode berhasil diupdate");
     }
 
+    /**
+     * DELETE TIMBANGAN
+     */
     public function destroy($id)
     {
-        Timbangan::findOrFail($id)->delete();
+        $t = Timbangan::findOrFail($id);
+        $besi = Besi::findOrFail($t->besi_id);
+
+        // Kembalikan stok
+        if ($t->status === "Barang Masuk") {
+            $besi->stok -= $t->berat;
+        } else {
+            $besi->stok += $t->berat;
+        }
+        $besi->save();
+
+        $t->delete();
+
         return back()->with('success', 'Data berhasil dihapus');
     }
 
+    /**
+     * CETAK
+     */
     public function cetak()
     {
         $data = Timbangan::with('besi')->get();
@@ -97,7 +158,7 @@ class TimbanganController extends Controller
     }
 
     /**
-     * Search Besi untuk dropdown realtime (min 4 huruf)
+     * SEARCH BESI
      */
     public function searchBesi(Request $request)
     {
