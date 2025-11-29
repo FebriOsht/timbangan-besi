@@ -12,7 +12,9 @@ class Timbangan extends Model
         'jenis',
         'berat',
         'harga',
-        'status'
+        'status',
+        'is_cetak',
+        'is_transfer'
     ];
 
     // RELASI KE TABEL BESI

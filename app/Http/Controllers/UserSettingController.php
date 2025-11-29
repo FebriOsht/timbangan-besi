@@ -79,11 +79,11 @@ class UserSettingController extends Controller
             'new_password_confirm'     => 'required|same:new_password',
         ]);
 
-        // Update password
-        $user->update([
-            'password' => bcrypt($request->new_password)
-        ]);
+        // // Update password
+        // $user->update([
+        //     'password' => bcrypt($request->new_password)
+        // ]);
 
-        return back()->with('success', 'Password berhasil diubah.');
+        // return back()->with('success', 'Password berhasil diubah.');
     }
 }

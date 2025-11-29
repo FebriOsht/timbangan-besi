@@ -5,6 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ $title }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
@@ -20,7 +21,7 @@
     <div class="flex-1">
 
 {{-- TOP NAV --}}
-<header class="bg-white shadow px-6 py-4 flex justify-between items-center">
+<header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-50">
     <h2 class="text-xl font-semibold">
         {{ $title }}
     </h2>

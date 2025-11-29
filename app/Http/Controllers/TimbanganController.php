@@ -148,14 +148,30 @@ class TimbanganController extends Controller
 
     /**
      * CETAK
+     * If `ids` query param is provided (JSON array), print only those records.
+     * Otherwise print all.
      */
-    public function cetak()
+    public function cetak(Request $request)
     {
-        $data = Timbangan::with('besi')->get();
-        $totalBerat = Timbangan::sum('berat');
+        $idsRaw = $request->query('ids');
+
+        if ($idsRaw) {
+            $ids = json_decode($idsRaw, true);
+
+            if (!$ids || count($ids) === 0) {
+                abort(404, "Tidak ada data yang dipilih");
+            }
+
+            $data = Timbangan::with('besi')->whereIn('id', $ids)->get();
+            $totalBerat = $data->sum('berat');
+        } else {
+            $data = Timbangan::with('besi')->get();
+            $totalBerat = Timbangan::sum('berat');
+        }
 
         return view('admin.input_timbangan.cetak', compact('data', 'totalBerat'));
     }
+
 
     /**
      * SEARCH BESI
@@ -175,4 +191,67 @@ class TimbanganController extends Controller
 
         return response()->json($data);
     }
+    /**
+ * SET IS CETAK (multiple ID)
+ */
+public function setCetak(Request $request)
+{
+    $ids = $request->ids;
+
+    if (!$ids || !is_array($ids)) {
+        return response()->json(['message' => 'Tidak ada data yang dipilih'], 400);
+    }
+
+    Timbangan::whereIn('id', $ids)->update([
+        'is_cetak' => true
+    ]);
+
+    return response()->json(['message' => 'Berhasil menandai sebagai sudah dicetak']);
+}
+
+/**
+ * SET IS TRANSFER (multiple ID)
+ */
+public function setTransfer(Request $request)
+{
+    $ids = $request->ids;
+
+    if (!$ids || !is_array($ids)) {
+        return response()->json(['message' => 'Tidak ada data yang dipilih'], 400);
+    }
+
+    Timbangan::whereIn('id', $ids)->update([
+        'is_transfer' => true
+    ]);
+
+    return response()->json(['message' => 'Berhasil menandai sebagai sudah ditransfer']);
+}
+public function markCetak(Request $request)
+{
+    $ids = $request->ids;
+
+    Timbangan::whereIn('id', $ids)->update([
+        'is_cetak' => 1
+    ]);
+
+    return response()->json([
+        'success' => true
+    ]);
+}
+
+public function getBesi($id)
+{
+    $besi = Besi::find($id);
+
+    if(!$besi){
+        return response()->json(['success' => false]);
+    }
+
+    return response()->json([
+        'success' => true,
+        'data' => $besi
+    ]);
+}
+
+
 }
