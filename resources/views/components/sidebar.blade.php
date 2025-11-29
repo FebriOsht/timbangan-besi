@@ -53,7 +53,7 @@
 
     </ul>
 
-<<a href="{{ route('admin.user_setting.index') }}"
+<<a href="{{ route('user.settings') }}"
    class="absolute bottom-5 left-5 flex items-center gap-2 
           bg-white text-green-700 font-medium px-4 py-2 rounded-lg 
           shadow-sm hover:bg-green-50 transition">

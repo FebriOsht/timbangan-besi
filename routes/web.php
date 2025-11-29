@@ -195,8 +195,10 @@ Route::middleware(['auth'])->group(function () {
     | USER SETTING (UNTUK ADMIN)
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/user-setting', [UserSettingController::class, 'index'])
-        ->name('admin.user_setting.index');
+
+    Route::get('/user/settings', [UserSettingController::class, 'index'])->name('user.settings');
+    Route::post('/user/settings/profile', [UserSettingController::class, 'updateProfile'])->name('user.settings.updateProfile');
+    Route::post('/user/settings/password', [UserSettingController::class, 'updatePassword'])->name('user.settings.updatePassword');
 });
 
 
