@@ -3,15 +3,37 @@
 namespace App\Http\Controllers;
 
 use App\Models\Nota;
-use Illuminate\Http\Request;
 use App\Models\Timbangan;
+use App\Models\Pabrik;
+use App\Models\Customer;
+use Illuminate\Http\Request;
 
 class NotaController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        return view('admin.nota.index');
-        
+        // Ambil data timbangan jika ada "ids" dari transfer
+        $timbangan = [];
+
+        if ($request->has('ids')) {
+            $ids = explode(',', $request->ids);
+            $timbangan = Timbangan::with('besi')->whereIn('id', $ids)->get();
+        }
+
+        return view('admin.nota.index', [
+            'timbangan' => $timbangan,
+            'pabrik'    => Pabrik::all(),
+            'customer'  => Customer::all(),
+        ]);
+    }
+
+    /**
+     * CREATE (alias untuk index dengan query params)
+     * Digunakan saat transfer dari timbangan page
+     */
+    public function create(Request $request)
+    {
+        return $this->index($request);
     }
 
     public function store(Request $request)
@@ -23,7 +45,7 @@ class NotaController extends Controller
             'customer'         => 'nullable|string',
             'nama_barang'      => 'required|string',
             'harga_per_kg'     => 'required|integer',
-            'total_berat'      => 'required|integer',
+            // 'total_berat'      -> 'required|integer',
             'potongan'         => 'nullable|integer',
             'jenis_pembayaran' => 'required|in:tunai,transfer,tempo',
             'total_bayar'      => 'required|integer',
@@ -33,23 +55,9 @@ class NotaController extends Controller
 
         return redirect()->back()->with('success', 'Nota berhasil disimpan.');
     }
-    public function create(Request $request)
-{
-    // Ambil banyak ID dari query string
-    $ids = explode(',', $request->ids);
 
-    // Ambil data timbangan dari database
-    $timbangan = Timbangan::whereIn('id', $ids)->get();
-
-    // Tampilkan halaman form Nota
-    return view('admin.nota.index', [
-        'timbangan' => $timbangan,
-        'ids'       => $ids,
-    ]);
-}
     public function cetak()
-{
-    return view('admin.nota.cetak_nota');
-}
-
+    {
+        return view('admin.nota.cetak_nota');
+    }
 }
