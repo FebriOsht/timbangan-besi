@@ -601,18 +601,24 @@ function setSudahTransfer(selectedIds) {
     })
     .then(res => res.json())
     .then(res => {
+
         Swal.fire({
             title: "Berhasil!",
-            text: res.message || "Data telah diperbarui",
+            text: res.message || "Data telah ditransfer",
             icon: "success",
         }).then(() => {
-            location.reload();
+
+            // ⬇️ REDIRECT KE HALAMAN NOTA
+            let idString = selectedIds.join(",");
+            window.location.href = "/nota/create?ids=" + idString;
+
         });
     })
     .catch(err => {
-        Swal.fire("Error!", "Gagal memperbarui data", "error");
+        Swal.fire("Error!", "Gagal memproses transfer", "error");
     });
 }
+
 
 
 </script>

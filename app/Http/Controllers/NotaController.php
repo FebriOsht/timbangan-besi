@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Nota;
 use Illuminate\Http\Request;
+use App\Models\Timbangan;
 
 class NotaController extends Controller
 {
@@ -32,6 +33,20 @@ class NotaController extends Controller
 
         return redirect()->back()->with('success', 'Nota berhasil disimpan.');
     }
+    public function create(Request $request)
+{
+    // Ambil banyak ID dari query string
+    $ids = explode(',', $request->ids);
+
+    // Ambil data timbangan dari database
+    $timbangan = Timbangan::whereIn('id', $ids)->get();
+
+    // Tampilkan halaman form Nota
+    return view('admin.nota.index', [
+        'timbangan' => $timbangan,
+        'ids'       => $ids,
+    ]);
+}
     public function cetak()
 {
     return view('admin.nota.cetak_nota');

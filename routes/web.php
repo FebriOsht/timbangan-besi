@@ -168,6 +168,10 @@ Route::post('/timbangan/mark-cetak', [TimbanganController::class, 'markCetak']);
     Route::get('/admin/nota/cetak', [NotaController::class, 'cetak'])
         ->name('admin.nota.cetak');
 
+    Route::get('/nota/create', [NotaController::class, 'create'])
+        ->name('nota.create');
+
+
 
     /*
     |--------------------------------------------------------------------------
