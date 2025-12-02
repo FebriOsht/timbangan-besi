@@ -143,7 +143,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/timbangan', [TimbanganController::class, 'store'])->name('timbangan.store');
     Route::put('/timbangan/{id}', [TimbanganController::class, 'update'])->name('timbangan.update');
     Route::delete('/timbangan/{id}', [TimbanganController::class, 'destroy'])->name('timbangan.destroy');
-Route::get('/timbangan/get-besi/{id}', [TimbanganController::class, 'getBesi']);
+    Route::get('/timbangan/get-besi/{id}', [TimbanganController::class, 'getBesi']);
+    Route::get('/timbangan/get-timbangan/{id}', [TimbanganController::class, 'getTimbangan']);
 
     // Cetak Timbangan
     Route::get('/timbangan/cetak', [TimbanganController::class, 'cetak'])
@@ -151,6 +152,9 @@ Route::get('/timbangan/get-besi/{id}', [TimbanganController::class, 'getBesi']);
     Route::post('/timbangan/set-cetak', [TimbanganController::class, 'setCetak'])->name('timbangan.setCetak');
 Route::post('/timbangan/set-transfer', [TimbanganController::class, 'setTransfer'])->name('timbangan.setTransfer');
 Route::post('/timbangan/mark-cetak', [TimbanganController::class, 'markCetak']);
+Route::get('/search-pabrik', [TimbanganController::class,'searchPabrik'])->name('pabrik.search');
+Route::get('/search-customer', [TimbanganController::class,'searchCustomer'])->name('customer.search');
+
 
 
 

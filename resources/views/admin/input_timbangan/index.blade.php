@@ -21,56 +21,55 @@
             </button>
 
             <!-- BUTTON CETAK -->
-<button 
-    type="button"
-    onclick="confirmCetakNota()"
-    class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition">
+            <button 
+                type="button"
+                onclick="confirmCetakNota()"
+                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition">
 
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-        viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M6 9V2h12v7m-2 4h-8v6h8v-6m4-2H4v10h4m8 0h4V11z" />
-    </svg>
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M6 9V2h12v7m-2 4h-8v6h8v-6m4-2H4v10h4m8 0h4V11z" />
+                </svg>
 
-    <span>Cetak Nota Timbangan</span>
-</button>
+                <span>Cetak Nota Timbangan</span>
+            </button>
 
-<!-- BUTTON TRANSFER -->
-<button 
-    type="button"
-    onclick="confirmTransferKeNotaTransaksi()"
-    class="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg shadow transition">
-    
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-        viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-    </svg>
+            <!-- BUTTON TRANSFER -->
+            <button 
+                type="button"
+                onclick="confirmTransferKeNotaTransaksi()"
+                class="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg shadow transition">
+                
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+                </svg>
 
-    <span>Transfer ke Nota Transaksi</span>
-</button>
-
+                <span>Transfer ke Nota Transaksi</span>
+            </button>
 
         </div>
     </div>
-
 
     <!-- TABLE -->
     <div class="bg-white shadow rounded-lg p-6">
         <table id="tabel-besi" class="w-full text-left border-collapse">
             <thead>
                 <tr class="border-b bg-gray-100 text-sm">
-
                     <th class="py-3 px-2 text-center">
                         <input type="checkbox" id="checkAll" class="w-4 h-4 cursor-pointer">
+                    </th>
                     <th class="py-3 px-2">Status</th>
-                    
-
+                    <th class="py-3 px-2">Tanggal</th>
                     <th class="py-3 px-2">ID Timbangan</th>
                     <th class="py-3 px-2">Jenis</th>
-                    <th class="py-3 px-2">Berat</th>
+                    <th class="py-3 px-2">Berat (kg)</th>
                     <th class="py-3 px-2">Harga/kg</th>
                     <th class="py-3 px-2">Status</th>
+                    <th class="py-3 px-2">Supplier</th>
+                    <th class="py-3 px-2">Customer</th>
                     <th class="py-3 px-2 text-center">Aksi</th>
                 </tr>
             </thead>
@@ -78,59 +77,42 @@
             <tbody>
                 @foreach ($data as $b)
                 <tr class="border-b hover:bg-gray-50">
-
                     <td class="py-3 px-2 text-center">
                         <input 
                             type="checkbox" 
                             class="row-check w-4 h-4 cursor-pointer"
                             value="{{ $b->id }}">
                     </td>
+
                     <td class="py-3 px-2">
+                        {{-- Status Cetak --}}
+                        @if($b->is_cetak)
+                            <span class="px-2 py-1 text-xs rounded-lg bg-blue-100 text-blue-700">Sudah Cetak</span>
+                        @else
+                            <span class="px-2 py-1 text-xs rounded-lg bg-gray-200 text-gray-700">Belum Cetak</span>
+                        @endif
 
-    {{-- Status Cetak --}}
-    @if($b->is_cetak)
-        <span class="px-2 py-1 text-xs rounded-lg bg-blue-100 text-blue-700">
-            Sudah Cetak
-        </span>
-    @else
-        <span class="px-2 py-1 text-xs rounded-lg bg-gray-200 text-gray-700">
-            Belum Cetak
-        </span>
-    @endif
-
-    {{-- Status Transfer --}}
-    @if($b->is_transfer)
-        <span class="px-2 py-1 text-xs rounded-lg bg-green-100 text-green-700 ml-1">
-            Sudah Transfer
-        </span>
-    @else
-        <span class="px-2 py-1 text-xs rounded-lg bg-amber-100 text-amber-700 ml-1">
-            Belum Transfer
-        </span>
-    @endif
-
-</td>
+                        {{-- Status Transfer --}}
+                        @if($b->is_transfer)
+                            <span class="px-2 py-1 text-xs rounded-lg bg-green-100 text-green-700 ml-1">Sudah Transfer</span>
+                        @else
+                            <span class="px-2 py-1 text-xs rounded-lg bg-amber-100 text-amber-700 ml-1">Belum Transfer</span>
+                        @endif
+                    </td>
+                    <td class="py-3 px-2">{{ \Carbon\Carbon::parse($b->tanggal)->format('Y-m-d') }}</td>
 
 
                     <td class="py-3 px-2">{{ $b->kode }}</td>
                     <td class="py-3 px-2">{{ $b->besi->nama ?? '-' }} | {{ $b->besi->jenis ?? '-' }}</td>
-                    <td class="py-3 px-2">{{ $b->berat }}</td>
-                    <td class="py-3 px-2">Rp{{ number_format($b->harga,0,',','.') }}</td>
+                    <td class="py-3 px-2 text-right">{{ number_format($b->berat, fmod($b->berat, 1) == 0 ? 0 : 2, ',', '.') }}</td>
+                    <td class="py-3 px-2 text-right">Rp {{ number_format($b->harga, 0, ',', '.') }}</td>
                     <td class="py-3 px-2">{{ $b->status }}</td>
-
+                    <td class="py-3 px-2">{{ $b->pabrik->nama ?? '-' }}</td>
+                    <td class="py-3 px-2">{{ $b->customer->nama ?? '-' }}</td>
                     <td class="py-3 px-2 flex justify-center gap-2">
-
                         <button
                             class="bg-blue-600 text-white px-3 py-1 rounded"
-                            @click="openEditModal(
-                                {{ $b->id }},
-                                '{{ $b->kode }}',
-                                '{{ $b->jenis }}',
-                                '{{ $b->harga }}',
-                                '{{ $b->berat }}',
-                                '{{ $b->status }}',
-                                {{ $b->besi_id }}
-                            )">
+                            @click="openEditModal({{ $b->id }})">
                             ✎
                         </button>
 
@@ -145,7 +127,6 @@
                                 🗑
                             </button>
                         </form>
-
                     </td>
 
                 </tr>
@@ -154,191 +135,257 @@
         </table>
     </div>
 
-
-
-
-    <!-- ====================================================== -->
-    <!-- ================= MODAL TAMBAH ======================== -->
-    <!-- ====================================================== -->
+    <!-- ==================== MODAL TAMBAH ==================== -->
     <div x-show="addModal"
         x-transition.opacity 
         class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
 
-        <div class="bg-white p-6 rounded shadow-lg w-96 relative" @click.outside="addModal=false">
+        <div class="bg-white p-6 rounded-xl shadow-lg w-[650px] relative" 
+             @click.outside="addModal=false">
 
-            <button @click="addModal=false" class="absolute top-2 right-2 text-gray-500 hover:text-black">
-                ✕
-            </button>
+            <button @click="addModal=false" class="absolute top-2 right-2 text-gray-500 hover:text-black">✕</button>
 
-            <h2 class="font-bold mb-4">Tambah Timbangan</h2>
+            <h2 class="font-bold mb-5 text-xl">Tambah Timbangan</h2>
 
             <form action="{{ route('timbangan.store') }}" method="POST">
                 @csrf
 
-                <!-- SEARCH -->
-                <label class="font-semibold">Cari Jenis Besi</label>
-                <input type="text" 
-                    x-model="searchQuery"
-                    @input="searchBesi"
-                    class="w-full border p-2 rounded mb-1"
-                    placeholder="Ketik minimal 4 huruf...">
+                <div class="grid grid-cols-2 gap-4">
 
-                <input type="hidden" name="besi_id" x-model="besi_id">
+                    <!-- TANGGAL -->
+                    <div>
+                        <label class="font-semibold">Tanggal</label>
+                        <input type="date" name="tanggal" x-model="tanggal" class="w-full border p-2 rounded mb-3">
+                    </div>
 
-                <!-- DROPDOWN -->
-                <div x-show="searchResults.length > 0"
-                    class="border rounded bg-white shadow absolute w-80 max-h-40 overflow-y-auto z-50">
-                    <template x-for="item in searchResults" :key="item.id">
-                        <div class="p-2 hover:bg-gray-200 cursor-pointer"
-                            @click="selectBesi(item)">
-                            <span x-text="item.nama + ' (' + item.jenis + ')'"></span>
+                    <!-- spacer -->
+                    <div></div>
+
+                    <!-- CARI PABRIK -->
+                    <div class="col-span-2 relative">
+                        <label class="font-semibold">Cari Supplier (Pabrik)</label>
+                        <input type="text" x-model="searchPabrikQuery" @input.debounce.300="searchPabrik" class="w-full border p-2 rounded mb-1" placeholder="Ketik nama pabrik...">
+                        <input type="hidden" name="pabrik_id" x-model="pabrik_id">
+
+                        <div x-show="searchPabrikResults.length > 0" class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50">
+                            <template x-for="item in searchPabrikResults" :key="item.id">
+                                <div class="p-2 hover:bg-gray-200 cursor-pointer" @click="selectPabrik(item)">
+                                    <span x-text="item.nama + ' — ' + (item.alamat || '-')"></span>
+                                </div>
+                            </template>
                         </div>
-                    </template>
+                    </div>
+
+                    <!-- CARI CUSTOMER -->
+                    <div class="col-span-2 relative">
+                        <label class="font-semibold">Cari Customer</label>
+                        <input type="text" x-model="searchCustomerQuery" @input.debounce.300="searchCustomer" class="w-full border p-2 rounded mb-1" placeholder="Ketik nama customer...">
+                        <input type="hidden" name="customer_id" x-model="customer_id">
+
+                        <div x-show="searchCustomerResults.length > 0" class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50">
+                            <template x-for="item in searchCustomerResults" :key="item.id">
+                                <div class="p-2 hover:bg-gray-200 cursor-pointer" @click="selectCustomer(item)">
+                                    <span x-text="item.nama + ' — ' + (item.alamat || '-')"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- CARI BESI -->
+                    <div class="col-span-2 relative">
+                        <label class="font-semibold">Cari Jenis Besi</label>
+                        <input type="text" x-model="searchQuery" @input.debounce.300="searchBesi" class="w-full border p-2 rounded mb-1" placeholder="Ketik minimal 3 huruf...">
+                        <input type="hidden" name="besi_id" x-model="besi_id">
+
+                        <div x-show="searchResults.length > 0" class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50">
+                            <template x-for="item in searchResults" :key="item.id">
+                                <div class="p-2 hover:bg-gray-200 cursor-pointer" @click="selectBesi(item)">
+                                    <span x-text="item.nama + ' (' + item.jenis + ')'"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- NAMA -->
+                    <div>
+                        <label class="font-semibold">Nama Besi</label>
+                        <input type="text" name="nama" x-model="nama" class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
+
+                    <!-- JENIS -->
+                    <div>
+                        <label class="font-semibold">Jenis</label>
+                        <input type="text" name="jenis" x-model="jenis" class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
+
+                    <!-- HARGA -->
+                    <div>
+                        <label class="font-semibold">Harga/kg</label>
+                        <input type="number" name="harga" x-model="harga" class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
+
+                    <!-- STOK -->
+                    <div>
+                        <label class="font-semibold">Sisa Stok</label>
+                        <input type="number" name="stok" x-model="stok" class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
+
+                    <!-- BERAT -->
+                    <div>
+                        <label class="font-semibold">Berat (kg)</label>
+                        <input type="number" name="berat" class="w-full border p-2 rounded mb-3" required>
+                    </div>
+
+                    <!-- STATUS -->
+                    <div>
+                        <label class="font-semibold">Status</label>
+                        <select name="status" class="w-full border p-2 rounded mb-3" required>
+                            <option value="">-- Pilih Status --</option>
+                            <option value="Barang Masuk">Barang Masuk</option>
+                            <option value="Barang Keluar">Barang Keluar</option>
+                        </select>
+                    </div>
+
                 </div>
 
-                <!-- FIELD OTOMATIS -->
-                <label class="mt-4 block font-semibold">Nama</label>
-                <input type="text" name="nama" x-model="nama"
-                    class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
-
-                <label class="font-semibold">Jenis</label>
-                <input type="text" name="jenis" x-model="jenis"
-                    class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
-
-                <label class="font-semibold">Harga/kg</label>
-                <input type="number" name="harga" x-model="harga"
-                    class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
-
-                <label class="font-semibold">Sisa Stok</label>
-                <input type="number" name="stok" x-model="stok"
-                    class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
-
-                <!-- INPUT MANUAL -->
-                <label class="font-semibold">Berat (kg)</label>
-                <input type="number" name="berat" class="w-full border p-2 rounded mb-3" required>
-
-                <label class="font-semibold">Status</label>
-                <select name="status" class="w-full border p-2 rounded mb-3" required>
-                    <option value="">-- Pilih Status --</option>
-                    <option value="Barang Masuk">Barang Masuk</option>
-                    <option value="Barang Keluar">Barang Keluar</option>
-                </select>
-
-                <button type="button" 
-                    @click="enableEdit()"
-                    class="bg-yellow-500 text-white px-3 py-2 rounded w-full mb-2">
-                    Edit Kolom
-                </button>
-
-                <button class="bg-green-600 text-white px-3 py-2 rounded w-full">
-                    Simpan
-                </button>
+                <button class="bg-green-600 text-white mt-4 px-4 py-2 rounded w-full">Simpan</button>
             </form>
 
         </div>
     </div>
 
+    <!-- ==================== MODAL EDIT ==================== -->
+    <div x-show="editModal"
+        x-transition.opacity 
+        class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
 
+        <div class="bg-white p-6 rounded shadow-lg w-[650px] relative" @click.outside="editModal=false">
+            <button @click="editModal=false" class="absolute top-2 right-2 text-gray-500 hover:text-black">✕</button>
+            <h2 class="font-bold mb-4">Edit Timbangan</h2>
 
+            <form :action="'/timbangan/' + editId" method="POST">
+                @csrf @method('PUT')
 
-<!-- ====================================================== -->
-<!-- ====================== MODAL EDIT ===================== -->
-<!-- ====================================================== -->
-<div x-show="editModal"
-    x-transition.opacity 
-    class="fixed inset-0 bg-black bg-opacity-30 flex items-center justify-center z-50">
-
-    <div class="bg-white p-6 rounded shadow-lg w-96 relative" @click.outside="editModal=false">
-
-        <button @click="editModal=false" class="absolute top-2 right-2 text-gray-500 hover:text-black">
-            ✕
-        </button>
-
-        <h2 class="font-bold mb-4">Edit Timbangan</h2>
-
-        <form :action="'/timbangan/' + editId" method="POST">
-            @csrf @method('PUT')
-
-            <!-- ID TIMBANGAN -->
-            <label class="font-semibold">ID Timbangan</label>
-            <input type="text" x-model="editKode"
-                class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
-
-            <!-- SEARCH -->
-            <label class="font-semibold">Cari Jenis Besi</label>
-            <input type="text" 
-                x-model="editSearchQuery"
-                @input="editSearchBesi"
-                class="w-full border p-2 rounded mb-1"
-                placeholder="Ketik minimal 4 huruf...">
-
-            <input type="hidden" name="besi_id" x-model="editBesiId">
-
-            <!-- DROPDOWN SEARCH -->
-            <div x-show="editSearchResults.length > 0"
-                class="border rounded bg-white shadow absolute w-80 max-h-40 overflow-y-auto z-50">
-                <template x-for="item in editSearchResults" :key="item.id">
-                    <div class="p-2 hover:bg-gray-200 cursor-pointer"
-                        @click="editSelectBesi(item)">
-                        <span x-text="item.nama + ' (' + item.jenis + ')'"></span>
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- TANGGAL -->
+                    <div>
+                        <label class="font-semibold">Tanggal</label>
+                        <input type="date" name="tanggal" x-model="editTanggal" class="w-full border p-2 rounded mb-3">
                     </div>
-                </template>
-            </div>
 
-            <!-- FIELD OTOMATIS (READONLY) -->
-            <label class="mt-4 block font-semibold">Nama</label>
-            <input type="text" name="nama" x-model="editNama"
-                class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    <div></div>
 
-            <label class="font-semibold">Jenis</label>
-            <input type="text" name="jenis" x-model="editJenis"
-                class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    <!-- PABRIK SEARCH -->
+                    <div class="col-span-2 relative">
+                        <label class="font-semibold">Cari Supplier (Pabrik)</label>
+                        <input type="text" x-model="editSearchPabrikQuery" @input.debounce.300="editSearchPabrik" class="w-full border p-2 rounded mb-1" placeholder="Ketik nama pabrik...">
+                        <input type="hidden" name="pabrik_id" x-model="editPabrikId">
 
-            <label class="font-semibold">Harga/kg</label>
-            <input type="number" name="harga" x-model="editHarga"
-                class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                        <div x-show="editSearchPabrikResults.length > 0" class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50">
+                            <template x-for="item in editSearchPabrikResults" :key="item.id">
+                                <div class="p-2 hover:bg-gray-200 cursor-pointer" @click="editSelectPabrik(item)">
+                                    <span x-text="item.nama + ' — ' + (item.alamat || '-')"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
 
-            <label class="font-semibold">Sisa Stok</label>
-            <input type="number" name="stok" x-model="editStok"
-                class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    <!-- CUSTOMER SEARCH -->
+                    <div class="col-span-2 relative">
+                        <label class="font-semibold">Cari Customer</label>
+                        <input type="text" x-model="editSearchCustomerQuery" @input.debounce.300="editSearchCustomer" class="w-full border p-2 rounded mb-1" placeholder="Ketik nama customer...">
+                        <input type="hidden" name="customer_id" x-model="editCustomerId">
 
-            <!-- INPUT MANUAL -->
-            <label class="font-semibold">Berat (kg)</label>
-            <input type="number" x-model="editBerat" name="berat" class="w-full border p-2 rounded mb-3" required>
+                        <div x-show="editSearchCustomerResults.length > 0" class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50">
+                            <template x-for="item in editSearchCustomerResults" :key="item.id">
+                                <div class="p-2 hover:bg-gray-200 cursor-pointer" @click="editSelectCustomer(item)">
+                                    <span x-text="item.nama + ' — ' + (item.alamat || '-')"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
 
-            <label class="font-semibold">Status</label>
-            <select name="status" class="w-full border p-2 rounded mb-3" required>
-                <option value="">-- Pilih Status --</option>
-                <option :selected="editStatus === 'Barang Masuk'" value="Barang Masuk">Barang Masuk</option>
-                <option :selected="editStatus === 'Barang Keluar'" value="Barang Keluar">Barang Keluar</option>
-            </select>
+                    <!-- BESI SEARCH -->
+                    <div class="col-span-2 relative">
+                        <label class="font-semibold">Cari Jenis Besi</label>
+                        <input type="text" x-model="editSearchQuery" @input.debounce.300="editSearchBesi" class="w-full border p-2 rounded mb-1" placeholder="Ketik minimal 3 huruf...">
+                        <input type="hidden" name="besi_id" x-model="editBesiId">
 
-            <!-- STATUS CETAK & TRANSFER -->
-            <label class="font-semibold">Sudah Cetak?</label>
-            <select name="is_cetak" class="w-full border p-2 rounded mb-3">
-                <option :selected="editIsCetak == 0" value="0">Belum</option>
-                <option :selected="editIsCetak == 1" value="1">Sudah</option>
-            </select>
+                        <div x-show="editSearchResults.length > 0" class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50">
+                            <template x-for="item in editSearchResults" :key="item.id">
+                                <div class="p-2 hover:bg-gray-200 cursor-pointer" @click="editSelectBesi(item)">
+                                    <span x-text="item.nama + ' (' + item.jenis + ')'"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
 
-            <label class="font-semibold">Sudah Transfer?</label>
-            <select name="is_transfer" class="w-full border p-2 rounded mb-3">
-                <option :selected="editIsTransfer == 0" value="0">Belum</option>
-                <option :selected="editIsTransfer == 1" value="1">Sudah</option>
-            </select>
+                    <!-- NAMA BESI -->
+                    <div>
+                        <label class="font-semibold">Nama Besi</label>
+                        <input type="text" name="nama" x-model="editNama" class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
 
-            <button class="bg-blue-600 text-white px-3 py-2 rounded w-full">
-                Update
-            </button>
+                    <!-- JENIS -->
+                    <div>
+                        <label class="font-semibold">Jenis</label>
+                        <input type="text" name="jenis" x-model="editJenis" class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
 
-        </form>
+                    <!-- HARGA -->
+                    <div>
+                        <label class="font-semibold">Harga/kg</label>
+                        <input type="number" name="harga" x-model="editHarga" class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
 
+                    <!-- STOK -->
+                    <div>
+                        <label class="font-semibold">Sisa Stok</label>
+                        <input type="number" name="stok" x-model="editStok" class="w-full border p-2 rounded mb-3 bg-gray-100 cursor-not-allowed" readonly>
+                    </div>
+
+                    <!-- BERAT -->
+                    <div>
+                        <label class="font-semibold">Berat (kg)</label>
+                        <input type="number" name="berat" x-model="editBerat" class="w-full border p-2 rounded mb-3" required>
+                    </div>
+
+                    <!-- STATUS -->
+                    <div>
+                        <label class="font-semibold">Status</label>
+                        <select name="status" class="w-full border p-2 rounded mb-3" required>
+                            <option value="">-- Pilih Status --</option>
+                            <option :selected="editStatus === 'Barang Masuk'" value="Barang Masuk">Barang Masuk</option>
+                            <option :selected="editStatus === 'Barang Keluar'" value="Barang Keluar">Barang Keluar</option>
+                        </select>
+                    </div>
+
+                    <!-- STATUS CETAK & TRANSFER -->
+                    <div>
+                        <label class="font-semibold">Sudah Cetak?</label>
+                        <select name="is_cetak" class="w-full border p-2 rounded mb-3">
+                            <option :selected="editIsCetak == 0" value="0">Belum</option>
+                            <option :selected="editIsCetak == 1" value="1">Sudah</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="font-semibold">Sudah Transfer?</label>
+                        <select name="is_transfer" class="w-full border p-2 rounded mb-3">
+                            <option :selected="editIsTransfer == 0" value="0">Belum</option>
+                            <option :selected="editIsTransfer == 1" value="1">Sudah</option>
+                        </select>
+                    </div>
+
+                </div>
+
+                <button class="bg-blue-600 text-white px-3 py-2 rounded w-full mt-4">Update</button>
+            </form>
+
+        </div>
     </div>
-</div>
-
 
 </div>
-
-
 
 @push('scripts')
 
@@ -385,102 +432,169 @@ $(document).ready(function() {
         pageLength: 10,
         scrollCollapse: true,
     });
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', () => {
 
     // SELECT ALL
     document.getElementById('checkAll').addEventListener('change', function () {
         let status = this.checked;
         document.querySelectorAll('.row-check').forEach(chk => chk.checked = status);
     });
-
 });
 </script>
-
 
 <!-- ALPINE JS -->
 <script>
 function notaBesi(){
     return {
+        // modal
         addModal:false,
         editModal:false,
 
-        // ADD
+        // ADD fields
+        tanggal: new Date().toISOString().slice(0,10),
+        pabrik_id: '',
+        customer_id: '',
+
+        // search pabrik
+        searchPabrikQuery: '',
+        searchPabrikResults: [],
+
+        // search customer
+        searchCustomerQuery: '',
+        searchCustomerResults: [],
+
+        // search besi
+        searchQuery:'',
+        searchResults:[],
+
+        // selected besi fields
+        besi_id:'',
         nama:'',
         jenis:'',
         harga:'',
         stok:'',
-        besi_id:'',
-        searchQuery:'',
-        searchResults:[],
 
-        // EDIT
+        // EDIT fields
         editId:'',
-        editKode:'',
+        editTanggal:'',
+        editPabrikId:'',
+        editCustomerId:'',
+        editSearchPabrikQuery:'',
+        editSearchPabrikResults:[],
+        editSearchCustomerQuery:'',
+        editSearchCustomerResults:[],
+        editSearchQuery:'',
+        editSearchResults:[],
+        editBesiId:'',
+        editNama:'',
         editJenis:'',
         editHarga:'',
+        editStok:'',
         editBerat:'',
         editStatus:'',
-        editBesiId:'',
-            editNama:'',
-    editStok:'',
-    editSearchQuery:'',
+        editIsCetak:0,
+        editIsTransfer:0,
 
         openAddModal(){
             this.addModal = true;
-            this.nama='';
-            this.jenis='';
-            this.harga='';
-            this.stok='';
-            this.searchQuery='';
-            this.searchResults=[];
+            this.tanggal = new Date().toISOString().slice(0,10);
+            this.pabrik_id = '';
+            this.customer_id = '';
+            this.searchQuery = '';
+            this.searchResults = [];
+            this.searchPabrikQuery = '';
+            this.searchPabrikResults = [];
+            this.searchCustomerQuery = '';
+            this.searchCustomerResults = [];
+            this.nama = '';
+            this.jenis = '';
+            this.harga = '';
+            this.stok = '';
+            this.besi_id = '';
         },
 
-        openEditModal(id,kode,jenis,harga,berat,status,besiId){
-    this.editModal = true;
+        // open edit modal by fetching data via JSON endpoint
+        openEditModal(id){
+            this.editModal = true;
+            this.editId = id;
 
-    this.editId     = id;
-    this.editKode   = kode;
-    this.editJenis  = jenis;
-    this.editHarga  = harga;
-    this.editBerat  = berat;
-    this.editStatus = status;
-    this.editBesiId = besiId;
+            fetch(`/timbangan/get-timbangan/${id}`)
+                .then(res => res.json())
+                .then(res => {
+                    if(res.success){
+                        let d = res.data;
 
-    // AUTO ISI DATA BESI BERDASARKAN ID
-    if(besiId){
-        fetch(`/timbangan/get-besi/${besiId}`)
+                        // set edit fields
+                        this.editTanggal = d.tanggal ? d.tanggal.slice(0,10) : new Date().toISOString().slice(0,10);
+                        this.editPabrikId = d.pabrik_id;
+                        this.editCustomerId = d.customer_id;
+
+                        // Besi fields
+                        if(d.besi){
+                            this.editBesiId = d.besi.id;
+                            this.editNama = d.besi.nama;
+                            this.editJenis = d.besi.jenis;
+                            this.editHarga = d.besi.harga;
+                            this.editStok = d.besi.stok;
+                            this.editSearchQuery = d.besi.nama;
+                        } else {
+                            this.editBesiId = '';
+                            this.editNama = '';
+                            this.editJenis = '';
+                            this.editHarga = '';
+                            this.editStok = '';
+                        }
+
+                        this.editBerat = d.berat;
+                        this.editStatus = d.status;
+                        this.editIsCetak = d.is_cetak == true || d.is_cetak == 1 ? 1 : 0;
+                        this.editIsTransfer = d.is_transfer == true || d.is_transfer == 1 ? 1 : 0;
+
+                        // show current pabrik/customer text in search boxes (if present)
+                        this.editSearchPabrikQuery = d.pabrik ? d.pabrik.nama : '';
+                        this.editSearchCustomerQuery = d.customer ? d.customer.nama : '';
+                    }
+                });
+        },
+
+        // --------------- SEARCH PABRIK (ADD) ---------------
+        searchPabrik(){
+            if(this.searchPabrikQuery.length < 3){
+                this.searchPabrikResults = [];
+                return;
+            }
+
+            fetch("{{ route('pabrik.search') }}?q=" + encodeURIComponent(this.searchPabrikQuery))
             .then(res => res.json())
-            .then(res => {
-                if(res.success){
-                    let b = res.data;
-
-                    // Set field agar langsung tampil
-                    this.editNama  = b.nama;
-                    this.editJenis = b.jenis;
-                    this.editHarga = b.harga;
-                    this.editStok  = b.stok;
-
-                    // Isi kolom pencarian
-                    this.editSearchQuery = b.nama;
-                }
-            });
-    }
-},
-
-
-        enableEdit(){
-            document.querySelectorAll('input[readonly]').forEach(el=>{
-                el.removeAttribute('readonly');
-                el.classList.remove('bg-gray-100','cursor-not-allowed');
-            });
+            .then(data => this.searchPabrikResults = data);
         },
 
+        selectPabrik(item){
+            this.pabrik_id = item.id;
+            this.searchPabrikQuery = item.nama;
+            this.searchPabrikResults = [];
+        },
+
+        // --------------- SEARCH CUSTOMER (ADD) ---------------
+        searchCustomer(){
+            if(this.searchCustomerQuery.length < 3){
+                this.searchCustomerResults = [];
+                return;
+            }
+
+            fetch("{{ route('customer.search') }}?q=" + encodeURIComponent(this.searchCustomerQuery))
+            .then(res => res.json())
+            .then(data => this.searchCustomerResults = data);
+        },
+
+        selectCustomer(item){
+            this.customer_id = item.id;
+            this.searchCustomerQuery = item.nama;
+            this.searchCustomerResults = [];
+        },
+
+        // --------------- SEARCH BESI (ADD) ---------------
         searchBesi(){
-            if(this.searchQuery.length < 4){
+            if(this.searchQuery.length < 3){
                 this.searchResults=[];
                 return;
             }
@@ -500,13 +614,74 @@ function notaBesi(){
             this.besi_id=item.id;
             this.searchQuery=item.nama;
             this.searchResults=[];
+        },
+
+        // --------------- EDIT SEARCH PABRIK ---------------
+        editSearchPabrik(){
+            if(this.editSearchPabrikQuery.length < 3){
+                this.editSearchPabrikResults = [];
+                return;
+            }
+
+            fetch("{{ route('pabrik.search') }}?q=" + encodeURIComponent(this.editSearchPabrikQuery))
+            .then(res => res.json())
+            .then(data => this.editSearchPabrikResults = data);
+        },
+
+        editSelectPabrik(item){
+            this.editPabrikId = item.id;
+            this.editSearchPabrikQuery = item.nama;
+            this.editSearchPabrikResults = [];
+        },
+
+        // --------------- EDIT SEARCH CUSTOMER ---------------
+        editSearchCustomer(){
+            if(this.editSearchCustomerQuery.length < 3){
+                this.editSearchCustomerResults = [];
+                return;
+            }
+
+            fetch("{{ route('customer.search') }}?q=" + encodeURIComponent(this.editSearchCustomerQuery))
+            .then(res => res.json())
+            .then(data => this.editSearchCustomerResults = data);
+        },
+
+        editSelectCustomer(item){
+            this.editCustomerId = item.id;
+            this.editSearchCustomerQuery = item.nama;
+            this.editSearchCustomerResults = [];
+        },
+
+        // --------------- EDIT SEARCH BESI ---------------
+        editSearchBesi(){
+            if(this.editSearchQuery.length < 3){
+                this.editSearchResults = [];
+                return;
+            }
+
+            fetch("{{ route('besi.search') }}?q=" + encodeURIComponent(this.editSearchQuery))
+            .then(res=>res.json())
+            .then(data=>{
+                this.editSearchResults=data;
+            });
+        },
+
+        editSelectBesi(item){
+            this.editNama = item.nama;
+            this.editJenis = item.jenis;
+            this.editHarga = item.harga;
+            this.editStok = item.stok;
+            this.editBesiId = item.id;
+            this.editSearchQuery = item.nama;
+            this.editSearchResults = [];
         }
     }
 }
-function confirmCetakNota() {
-    let ids = [...document.querySelectorAll('.row-check:checked')]
-        .map(chk => chk.value);
+</script>
 
+<script>
+function confirmCetakNota() {
+    let ids = [...document.querySelectorAll('.row-check:checked')].map(chk => chk.value);
     if(ids.length === 0){
         Swal.fire("Info", "Pilih dulu data yang ingin dicetak!", "info");
         return;
@@ -523,19 +698,14 @@ function confirmCetakNota() {
         cancelButtonText: "Batal",
     }).then(res => {
         if(res.isConfirmed){
-            // Cetak di halaman baru
             window.open('/timbangan/cetak?ids=' + encodeURIComponent(JSON.stringify(ids)), '_blank');
-            
-            // Mark sebagai sudah cetak
             setSudahCetak(ids);
         }
     });
 }
 
 function confirmTransferKeNotaTransaksi() {
-    let ids = [...document.querySelectorAll('.row-check:checked')]
-        .map(chk => chk.value);
-
+    let ids = [...document.querySelectorAll('.row-check:checked')].map(chk => chk.value);
     if(ids.length === 0){
         Swal.fire("Info", "Pilih dulu data yang ingin ditransfer!", "info");
         return;
@@ -556,62 +726,21 @@ function confirmTransferKeNotaTransaksi() {
         }
     });
 }
-function confirmSudahCetak(selectedIds) {
-    Swal.fire({
-        title: "Tandai sebagai Sudah Cetak?",
-        text: "Perubahan ini tidak bisa dibatalkan!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Ya, Cetak!",
-        cancelButtonText: "Batal",
-    }).then(res => {
-        if(res.isConfirmed){
-            setSudahCetak(selectedIds);
-        }
-    });
-}
-
-function confirmSudahTransfer(selectedIds) {
-    Swal.fire({
-        title: "Tandai sebagai Sudah Transfer?",
-        text: "Perubahan ini tidak bisa dibatalkan!",
-        icon: "warning",
-        showCancelButton: true,
-        confirmButtonColor: "#16a34a",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Ya, Transfer!",
-        cancelButtonText: "Batal",
-    }).then(res => {
-        if(res.isConfirmed){
-            setSudahTransfer(selectedIds);
-        }
-    });
-}
 
 function setSudahTransfer(selectedIds) {
     fetch("{{ route('timbangan.setTransfer') }}", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            "X-CSRF-TOKEN": document.querySelector('meta[name=\"csrf-token\"]').content
         },
         body: JSON.stringify({ ids: selectedIds })
     })
     .then(res => res.json())
     .then(res => {
-
-        Swal.fire({
-            title: "Berhasil!",
-            text: res.message || "Data telah ditransfer",
-            icon: "success",
-        }).then(() => {
-
-            // ⬇️ REDIRECT KE HALAMAN NOTA
+        Swal.fire({ title: "Berhasil!", text: res.message || "Data telah ditransfer", icon: "success" }).then(() => {
             let idString = selectedIds.join(",");
             window.location.href = "/nota/create?ids=" + idString;
-
         });
     })
     .catch(err => {
@@ -619,60 +748,20 @@ function setSudahTransfer(selectedIds) {
     });
 }
 
-
-
-</script>
-<script>
-function setCetak(ids) {
+function setSudahCetak(ids) {
     fetch("{{ route('timbangan.setCetak') }}", {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
+            "X-CSRF-TOKEN": document.querySelector('meta[name=\"csrf-token\"]').content
         },
         body: JSON.stringify({ ids: ids })
     })
     .then(res => res.json())
     .then(data => {
-        alert(data.message);
-        location.reload();
+        Swal.fire("Berhasil!", data.message || "Status sudah diupdate menjadi Sudah Cetak.", "success").then(()=>location.reload());
     });
 }
-
-function setTransfer(ids) {
-    fetch("{{ route('timbangan.setTransfer') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-        },
-        body: JSON.stringify({ ids: ids })
-    })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-        location.reload();
-    });
-}
-
-function setSudahCetak(ids) {
-    fetch("/timbangan/mark-cetak", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
-        },
-        body: JSON.stringify({ ids: ids })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if(data.success){
-            Swal.fire("Berhasil!", "Status sudah diupdate menjadi Sudah Cetak.", "success")
-            .then(() => location.reload());
-        }
-    });
-}
-
 </script>
 
 @endpush

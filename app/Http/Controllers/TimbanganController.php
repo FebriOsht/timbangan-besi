@@ -4,14 +4,23 @@ namespace App\Http\Controllers;
 
 use App\Models\Timbangan;
 use App\Models\Besi;
+use App\Models\Customer;
+use App\Models\Pabrik;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class TimbanganController extends Controller
 {
     public function index()
     {
-        $data = Timbangan::with('besi')->orderBy('created_at', 'desc')->get();
-        return view('admin.input_timbangan.index', compact('data'));
+        // load recent data, with relations for display
+        $data = Timbangan::with(['besi', 'customer', 'pabrik'])->orderBy('created_at', 'desc')->get();
+
+        // Also pass lists if you want (not strictly needed since we use AJAX search)
+        $pabrik = Pabrik::orderBy('nama')->limit(200)->get();
+        $customer = Customer::orderBy('nama')->limit(200)->get();
+
+        return view('admin.input_timbangan.index', compact('data','pabrik','customer'));
     }
 
     /**
@@ -39,14 +48,16 @@ class TimbanganController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'besi_id' => 'required|exists:besi,id',
-            'berat'   => 'required|numeric',
-            'status'  => 'required|in:Barang Masuk,Barang Keluar',
+            'besi_id'     => 'required|exists:besi,id',
+            'berat'       => 'required|numeric',
+            'status'      => 'required|in:Barang Masuk,Barang Keluar',
+            'customer_id' => 'required|exists:customers,id',
+            'pabrik_id'   => 'required|exists:pabriks,id',
+            'tanggal'     => 'required|date',
         ]);
 
         $besi = Besi::findOrFail($request->besi_id);
 
-        // Status langsung disimpan sesuai enum
         $status = $request->status;
 
         // Update stok otomatis
@@ -62,15 +73,18 @@ class TimbanganController extends Controller
 
         $kode = $this->generateKode();
 
-        Timbangan::create([
-            'kode'    => $kode,
-            'besi_id' => $besi->id,
-            'berat'   => $request->berat,
-            'harga'   => $besi->harga,
-            'status'  => $status
+        $t = Timbangan::create([
+            'kode'       => $kode,
+            'besi_id'    => $besi->id,
+            'berat'      => $request->berat,
+            'harga'      => $besi->harga,
+            'status'     => $status,
+            'customer_id'=> $request->customer_id,
+            'pabrik_id'  => $request->pabrik_id,
+            'tanggal'    => $request->tanggal,
         ]);
 
-        return back()->with('success', "Timbangan dengan kode $kode berhasil ditambahkan");
+        return back()->with('success', "Timbangan dengan kode $kode berhasil ditambahkan")->with('success_kode', $kode);
     }
 
     /**
@@ -79,9 +93,14 @@ class TimbanganController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'besi_id' => 'required|exists:besi,id',
-            'berat'   => 'required|numeric',
-            'status'  => 'required|in:Barang Masuk,Barang Keluar'
+            'besi_id'     => 'required|exists:besi,id',
+            'berat'       => 'required|numeric',
+            'status'      => 'required|in:Barang Masuk,Barang Keluar',
+            'customer_id' => 'required|exists:customers,id',
+            'pabrik_id'   => 'required|exists:pabriks,id',
+            'tanggal'     => 'required|date',
+            'is_cetak'    => 'sometimes|in:0,1',
+            'is_transfer' => 'sometimes|in:0,1',
         ]);
 
         $t = Timbangan::findOrFail($id);
@@ -91,9 +110,7 @@ class TimbanganController extends Controller
 
         $newStatus = $request->status;
 
-        /** 
-         * Balikkan efek lama terhadap stok
-         */
+        // Balikkan efek lama terhadap stok
         if ($t->status === "Barang Masuk") {
             $oldBesi->stok -= $t->berat;
         } else {
@@ -101,9 +118,7 @@ class TimbanganController extends Controller
         }
         $oldBesi->save();
 
-        /**
-         * Terapkan stok baru
-         */
+        // Terapkan stok baru
         if ($newStatus === "Barang Masuk") {
             $newBesi->stok += $request->berat;
         } else {
@@ -114,15 +129,29 @@ class TimbanganController extends Controller
         }
         $newBesi->save();
 
-        // Update data
-        $t->update([
-            'besi_id' => $newBesi->id,
-            'berat'   => $request->berat,
-            'harga'   => $newBesi->harga,
-            'status'  => $newStatus
-        ]);
+        // Prepare update data
+        $updateData = [
+            'besi_id'    => $newBesi->id,
+            'berat'      => $request->berat,
+            'harga'      => $newBesi->harga,
+            'status'     => $newStatus,
+            'customer_id'=> $request->customer_id,
+            'pabrik_id'  => $request->pabrik_id,
+            'tanggal'    => $request->tanggal,
+        ];
 
-        return back()->with('success', "Timbangan $t->kode berhasil diupdate");
+        // Add boolean fields if provided
+        if ($request->has('is_cetak')) {
+            $updateData['is_cetak'] = (bool) $request->is_cetak;
+        }
+        if ($request->has('is_transfer')) {
+            $updateData['is_transfer'] = (bool) $request->is_transfer;
+        }
+
+        // Update data timbangan
+        $t->update($updateData);
+
+        return back()->with('success', "Timbangan {$t->kode} berhasil diupdate")->with('success_update', $t->kode);
     }
 
     /**
@@ -148,8 +177,6 @@ class TimbanganController extends Controller
 
     /**
      * CETAK
-     * If `ids` query param is provided (JSON array), print only those records.
-     * Otherwise print all.
      */
     public function cetak(Request $request)
     {
@@ -162,16 +189,15 @@ class TimbanganController extends Controller
                 abort(404, "Tidak ada data yang dipilih");
             }
 
-            $data = Timbangan::with('besi')->whereIn('id', $ids)->get();
+            $data = Timbangan::with(['besi','customer','pabrik'])->whereIn('id', $ids)->get();
             $totalBerat = $data->sum('berat');
         } else {
-            $data = Timbangan::with('besi')->get();
+            $data = Timbangan::with(['besi','customer','pabrik'])->get();
             $totalBerat = Timbangan::sum('berat');
         }
 
         return view('admin.input_timbangan.cetak', compact('data', 'totalBerat'));
     }
-
 
     /**
      * SEARCH BESI
@@ -180,78 +206,127 @@ class TimbanganController extends Controller
     {
         $q = $request->q;
 
-        if (strlen($q) < 4) {
+        if (strlen($q) < 3) {
             return response()->json([]);
         }
 
         $data = Besi::where('nama', 'like', "%$q%")
-                        ->orWhere('jenis', 'like', "%$q%")
-                        ->limit(10)
-                        ->get();
+                    ->orWhere('jenis', 'like', "%$q%")
+                    ->limit(10)
+                    ->get();
 
         return response()->json($data);
     }
+
     /**
- * SET IS CETAK (multiple ID)
- */
-public function setCetak(Request $request)
-{
-    $ids = $request->ids;
+     * SEARCH PABRIK
+     */
+    public function searchPabrik(Request $request)
+    {
+        $q = $request->q;
+        if (strlen($q) < 3) return response()->json([]);
 
-    if (!$ids || !is_array($ids)) {
-        return response()->json(['message' => 'Tidak ada data yang dipilih'], 400);
+        $data = Pabrik::where('nama', 'like', "%$q%")
+                    ->orWhere('alamat', 'like', "%$q%")
+                    ->limit(10)
+                    ->get();
+
+        return response()->json($data);
     }
 
-    Timbangan::whereIn('id', $ids)->update([
-        'is_cetak' => true
-    ]);
+    /**
+     * SEARCH CUSTOMER
+     */
+    public function searchCustomer(Request $request)
+    {
+        $q = $request->q;
+        if (strlen($q) < 3) return response()->json([]);
 
-    return response()->json(['message' => 'Berhasil menandai sebagai sudah dicetak']);
-}
+        $data = Customer::where('nama', 'like', "%$q%")
+                    ->orWhere('alamat', 'like', "%$q%")
+                    ->limit(10)
+                    ->get();
 
-/**
- * SET IS TRANSFER (multiple ID)
- */
-public function setTransfer(Request $request)
-{
-    $ids = $request->ids;
-
-    if (!$ids || !is_array($ids)) {
-        return response()->json(['message' => 'Tidak ada data yang dipilih'], 400);
+        return response()->json($data);
     }
 
-    Timbangan::whereIn('id', $ids)->update([
-        'is_transfer' => true
-    ]);
+    /**
+     * MARK CETAK / TRANSFER
+     */
+    public function setCetak(Request $request)
+    {
+        $ids = $request->ids;
 
-    return response()->json(['message' => 'Berhasil menandai sebagai sudah ditransfer']);
-}
-public function markCetak(Request $request)
-{
-    $ids = $request->ids;
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['message' => 'Tidak ada data yang dipilih'], 400);
+        }
 
-    Timbangan::whereIn('id', $ids)->update([
-        'is_cetak' => 1
-    ]);
+        Timbangan::whereIn('id', $ids)->update([
+            'is_cetak' => true
+        ]);
 
-    return response()->json([
-        'success' => true
-    ]);
-}
-
-public function getBesi($id)
-{
-    $besi = Besi::find($id);
-
-    if(!$besi){
-        return response()->json(['success' => false]);
+        return response()->json(['message' => 'Berhasil menandai sebagai sudah dicetak']);
     }
 
-    return response()->json([
-        'success' => true,
-        'data' => $besi
-    ]);
-}
+    public function setTransfer(Request $request)
+    {
+        $ids = $request->ids;
 
+        if (!$ids || !is_array($ids)) {
+            return response()->json(['message' => 'Tidak ada data yang dipilih'], 400);
+        }
 
+        Timbangan::whereIn('id', $ids)->update([
+            'is_transfer' => true
+        ]);
+
+        return response()->json(['message' => 'Berhasil menandai sebagai sudah ditransfer']);
+    }
+
+    public function markCetak(Request $request)
+    {
+        $ids = $request->ids;
+
+        Timbangan::whereIn('id', $ids)->update([
+            'is_cetak' => 1
+        ]);
+
+        return response()->json([
+            'success' => true
+        ]);
+    }
+
+    /**
+     * GET BESI (existing)
+     */
+    public function getBesi($id)
+    {
+        $besi = Besi::find($id);
+
+        if(!$besi){
+            return response()->json(['success' => false]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $besi
+        ]);
+    }
+
+    /**
+     * GET TIMBANGAN (JSON) - dipakai untuk edit modal
+     */
+    public function getTimbangan($id)
+    {
+        $t = Timbangan::with(['besi','customer','pabrik'])->find($id);
+
+        if(!$t){
+            return response()->json(['success' => false]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $t
+        ]);
+    }
 }
