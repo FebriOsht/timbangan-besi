@@ -200,8 +200,14 @@ Route::get('/search-customer', [TimbanganController::class,'searchCustomer'])->n
     | LAPORAN
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/laporan', [LaporanController::class, 'index'])
-        ->name('admin.laporan.index');
+Route::get('/admin/laporan', [LaporanController::class, 'index'])
+    ->name('admin.laporan.index');
+
+Route::get('/admin/laporan/pembelian', [LaporanController::class, 'pembelian'])
+    ->name('admin.laporan.pembelian');
+
+Route::get('/admin/laporan/penjualan', [LaporanController::class, 'penjualan'])
+    ->name('admin.laporan.penjualan');
 
 
     /*
