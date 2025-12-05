@@ -49,11 +49,16 @@
         <li><a href="{{ route('nota.index') }}" class="block px-3 py-2 hover:bg-green-600 rounded">Nota</a></li>
         <li><a href="{{ route('admin.mutasi_stock.index') }}" class="block px-3 py-2 hover:bg-green-600 rounded">Mutasi Stok</a></li>
         <li><a href="{{ route('admin.stock-opname.index') }}" class="block px-3 py-2 hover:bg-green-600 rounded">Stok Opname</a></li>
-        <li><a href="#" class="block px-3 py-2 hover:bg-green-600 rounded">Laporan</a></li>
+        <li><a href="{{ route('admin.laporan.index') }}" class="block px-3 py-2 hover:bg-green-600 rounded">Laporan</a></li>
 
     </ul>
 
-    <div class="absolute bottom-5 left-5 text-sm opacity-70">
-        Pengaturan Akun
-    </div>
+<<a href="{{ route('user.settings') }}"
+   class="absolute bottom-5 left-5 flex items-center gap-2 
+          bg-white text-green-700 font-medium px-4 py-2 rounded-lg 
+          shadow-sm hover:bg-green-50 transition">
+    Pengaturan Akun
+</a>
+
+
 </aside>
