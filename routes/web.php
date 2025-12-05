@@ -182,8 +182,24 @@ Route::get('/search-customer', [TimbanganController::class,'searchCustomer'])->n
     | MUTASI STOCK
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/mutasi-stock', [MutasiStockController::class, 'index'])
-        ->name('admin.mutasi_stock.index');
+    Route::prefix('admin/mutasi-stock')->name('admin.mutasi_stock.')->group(function () {
+
+    // INDEX
+    Route::get('/', [MutasiStockController::class, 'index'])
+        ->name('index');
+
+    // STORE
+    Route::post('/store', [MutasiStockController::class, 'store'])
+        ->name('store');
+
+    // DELETE
+    Route::delete('/{id}', [MutasiStockController::class, 'destroy'])
+        ->name('destroy');
+
+    // AJAX GET DATA
+    Route::get('/get-data', [MutasiStockController::class, 'getData'])
+        ->name('getdata');
+});
 
 
     /*
