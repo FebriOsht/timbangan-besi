@@ -83,13 +83,17 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('master')->name('master.')->group(function () {
 
-        // USERS
-        Route::resource('user', UserController::class)->names([
-            'index'   => 'user',
-            'store'   => 'user.store',
-            'update'  => 'user.update',
-            'destroy' => 'user.destroy',
-        ]);
+        // USER
+Route::resource('user', UserController::class)->names([
+    'index'   => 'user',
+    'store'   => 'user.store',
+    'update'  => 'user.update',
+    'destroy' => 'user.destroy',
+]);
+
+// RESET PASSWORD (custom)
+Route::post('user/{user}/reset-password', [UserController::class, 'resetPassword'])
+    ->name('user.reset_password');
 
         // PABRIK
         Route::resource('pabrik', PabrikController::class)->names([
