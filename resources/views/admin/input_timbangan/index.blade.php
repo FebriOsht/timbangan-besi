@@ -6,51 +6,93 @@
     <div class="flex justify-between mb-4">
         <h2 class="text-xl font-bold">Data Timbangan Besi</h2>
 
-        <div class="flex gap-2">
+<div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
+        <!-- SEARCH & FILTER -->
+    <div class="flex flex-col md:flex-row gap-3 w-full md:w-auto">
+        
+        <!-- SEARCH INPUT -->
+        <input
+            id="globalSearch"
+            type="text"
+            placeholder="Cari..."
+            class="border rounded px-3 py-2 w-full md:w-48"
+        >
 
-            <!-- BUTTON TAMBAH -->
-            <button 
-                @click="openAddModal()" 
-                class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M12 4v16m8-8H4" />
-                </svg>
-                <span>New Timbangan</span>
-            </button>
+        <!-- COLUMN SELECTOR -->
+        <select
+            id="searchField"
+            class="border rounded px-3 py-2 w-full md:w-48"
+        >
+            <option value="all">Cari di Semua Kolom</option>
+            <option value="4">Jenis Besi</option>
+            <option value="8">Supplier (Pabrik)</option>
+            <option value="9">Customer</option>
+        </select>
 
-            <!-- BUTTON CETAK -->
-            <button 
-                type="button"
-                onclick="confirmCetakNota()"
-                class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition">
+        <!-- FILTER STATUS -->
+        <select
+            id="statusFilter"
+            class="border rounded px-3 py-2 w-full md:w-40"
+        >
+            <option value="">Semua Status</option>
+            <option value="Barang Masuk">Barang Masuk</option>
+            <option value="Barang Keluar">Barang Keluar</option>
+        </select>
 
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M6 9V2h12v7m-2 4h-8v6h8v-6m4-2H4v10h4m8 0h4V11z" />
-                </svg>
+        <!-- RESET BUTTON -->
+        <button
+            id="clearFilters"
+            class="border border-gray-400 rounded px-3 py-2 bg-gray-200 hover:bg-gray-300 w-full md:w-auto"
+        >
+            Reset
+        </button>
 
-                <span>Cetak Nota Timbangan</span>
-            </button>
+    </div>
+    <!-- GROUP TOMBOL -->
+    <div class="flex gap-2">
+        <!-- BUTTON TAMBAH -->
+        <button 
+            @click="openAddModal()" 
+            class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M12 4v16m8-8H4" />
+            </svg>
+            <span>New Timbangan</span>
+        </button>
 
-            <!-- BUTTON TRANSFER -->
-            <button 
-                type="button"
-                onclick="confirmTransferKeNotaTransaksi()"
-                class="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg shadow transition">
-                
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-                    viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M13 5l7 7-7 7M5 5l7 7-7 7" />
-                </svg>
+        <!-- BUTTON CETAK -->
+        <button 
+            type="button"
+            onclick="confirmCetakNota()"
+            class="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg shadow transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M6 9V2h12v7m-2 4h-8v6h8v-6m4-2H4v10h4m8 0h4V11z" />
+            </svg>
+            <span>Cetak Nota Timbangan</span>
+        </button>
 
-                <span>Transfer ke Nota Transaksi</span>
-            </button>
+        <!-- BUTTON TRANSFER -->
+        <button 
+            type="button"
+            onclick="confirmTransferKeNotaTransaksi()"
+            class="flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg shadow transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+            </svg>
+            <span>Transfer ke Nota Transaksi</span>
+        </button>
+    </div>
 
-        </div>
+
+
+</div>
+
     </div>
 
     <!-- TABLE -->
@@ -62,14 +104,14 @@
                         <input type="checkbox" id="checkAll" class="w-4 h-4 cursor-pointer">
                     </th>
                     <th class="py-3 px-2">Status</th>
-                    <th class="py-3 px-2">Tanggal</th>
-                    <th class="py-3 px-2">ID Timbangan</th>
-                    <th class="py-3 px-2">Jenis</th>
-                    <th class="py-3 px-2">Berat (kg)</th>
-                    <th class="py-3 px-2">Harga/kg</th>
-                    <th class="py-3 px-2">Status</th>
-                    <th class="py-3 px-2">Supplier</th>
-                    <th class="py-3 px-2">Customer</th>
+                    <th class="py-3 px-2 cursor-pointer">Tanggal</th>
+                    <th class="py-3 px-2 cursor-pointer">ID Timbangan</th>
+                    <th class="py-3 px-2 cursor-pointer">Jenis</th>
+                    <th class="py-3 px-2 cursor-pointer">Berat (kg)</th>
+                    <th class="py-3 px-2 cursor-pointer">Harga/kg</th>
+                    <th class="py-3 px-2 cursor-pointer">Status</th>
+                    <th class="py-3 px-2 cursor-pointer">Supplier</th>
+                    <th class="py-3 px-2 cursor-pointer">Customer</th>
                     <th class="py-3 px-2 text-center">Aksi</th>
                 </tr>
             </thead>
@@ -426,18 +468,127 @@ Swal.fire({
 @endif
 </script>
 
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+<link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+
 <script>
 $(document).ready(function() {
-    $('#tabel-besi').DataTable({
+    console.log('=== DataTable Initialization ===');
+    
+    // Initialize DataTable
+    var table = $('#tabel-besi').DataTable({
         pageLength: 10,
-        scrollCollapse: true,
+        paging: true,
+        lengthChange: false,
+        info: true,
+        searching: true,
+        columnDefs: [
+            { orderable: false, targets: [0, 1, 7, 10] }
+        ],
+        order: [[2, 'desc']]
     });
 
-    // SELECT ALL
-    document.getElementById('checkAll').addEventListener('change', function () {
-        let status = this.checked;
-        document.querySelectorAll('.row-check').forEach(chk => chk.checked = status);
+    console.log('DataTable initialized successfully');
+    console.log('Total columns:', table.settings()[0].aoColumns.length);
+
+    // Make sure elements exist
+    if($('#globalSearch').length === 0) console.error('globalSearch not found');
+    if($('#searchField').length === 0) console.error('searchField not found');
+    if($('#statusFilter').length === 0) console.error('statusFilter not found');
+    if($('#clearFilters').length === 0) console.error('clearFilters not found');
+
+    // SEARCH HANDLER
+    var searchTimeout;
+    $('#globalSearch').on('keyup', function(){
+        clearTimeout(searchTimeout);
+        var searchVal = $(this).val();
+        var fieldVal = $('#searchField').val();
+        
+        console.log('Search - value:', searchVal, ', field:', fieldVal);
+        
+        searchTimeout = setTimeout(function(){
+            try {
+                if(fieldVal === 'all'){
+                    // Global search across all columns
+                    table.columns().search('');  // Clear column searches
+                    table.search(searchVal).draw();
+                } else {
+                    // Search specific column
+                    var colIdx = parseInt(fieldVal);
+                    table.columns().search('');
+                    table.column(colIdx).search(searchVal).draw();
+                }
+                console.log('Search executed');
+            } catch(e) {
+                console.error('Search error:', e);
+            }
+        }, 300);
     });
+
+    // COLUMN SELECTOR
+    $('#searchField').on('change', function(){
+        console.log('Column changed to:', $(this).val());
+        // Reset search and trigger new search with selected column
+        $('#globalSearch').val('').trigger('keyup');
+    });
+
+    // STATUS FILTER
+    $('#statusFilter').on('change', function(){
+        var statusVal = $(this).val();
+        console.log('Status filter:', statusVal);
+        
+        try {
+            if(statusVal === ''){
+                table.column(7).search('').draw();
+            } else {
+                // Exact match for status
+                table.column(7).search('^' + statusVal + '$', true, false).draw();
+            }
+        } catch(e) {
+            console.error('Status filter error:', e);
+        }
+    });
+
+    // RESET BUTTON
+    $('#clearFilters').on('click', function(){
+        console.log('Reset filters clicked');
+        
+        try {
+            $('#globalSearch').val('');
+            $('#searchField').val('all');
+            $('#statusFilter').val('');
+            table.columns().search('').draw();
+        } catch(e) {
+            console.error('Reset error:', e);
+        }
+    });
+
+    // CHECKBOX HANDLING
+    $('#tabel-besi thead').on('click', '#checkAll', function(e){
+        e.stopPropagation();
+    });
+
+    $(document).on('change', '#checkAll', function(){
+        var isChecked = $(this).is(':checked');
+        $('#tabel-besi tbody .row-check').prop('checked', isChecked);
+    });
+
+    $(document).on('change', '.row-check', function(){
+        var totalRows = $('#tabel-besi tbody .row-check').length;
+        var checkedRows = $('#tabel-besi tbody .row-check:checked').length;
+        
+        if(totalRows > 0 && totalRows === checkedRows){
+            $('#checkAll').prop('checked', true);
+        } else {
+            $('#checkAll').prop('checked', false);
+        }
+    });
+
+    table.on('draw', function(){
+        $('#checkAll').prop('checked', false);
+    });
+
+    console.log('=== All handlers attached ===');
 });
 </script>
 
