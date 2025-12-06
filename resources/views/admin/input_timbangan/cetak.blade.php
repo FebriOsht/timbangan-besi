@@ -19,15 +19,17 @@
     <h2 class="green">LOGO</h2>
 
     <div class="header">
+        @foreach($data as $d)
         <div>
             <h3 class="green">Nota Timbangan</h3>
-            Customer :................................................<br>
-            Alamat   :................................................
+            Customer :{{ $d->customer->nama ?? '-' }}<br>
+            Alamat   :{{ $d->customer->alamat ?? '-' }}
         </div>
         <div>
             {{ now()->format('F d, Y') }} <br>
-            NTB-00{{ rand(10,999) }}
+            <h4 class="green">{{$d->kode}}</h4>
         </div>
+        @endforeach
     </div>
 
     <table>
@@ -42,8 +44,8 @@
             @foreach($data as $d)
             <tr>
                 <td>{{ $d->kode }}</td>
-                <td>{{ $d->jenis }}</td>
-                <td>{{ $d->berat }}</td>
+                <td>{{ $d->besi->nama ?? '-' }} | {{ $d->besi->jenis ?? '-' }}</td>
+                <td>{{ number_format($d->berat, fmod($d->berat, 1) == 0 ? 0 : 2, ',', '.')}}</td>
             </tr>
             @endforeach
         </tbody>
@@ -55,17 +57,18 @@
     </p>
 
     <p style="text-align: right; margin-top: -40px;">
-        <strong>Total Berat {{ $totalBerat }} KG</strong>
+        <strong style="color: green;">Total Berat {{ $totalBerat }} KG</strong>
+
     </p>
 
     <div class="footer">
         <div class="center">
             Mengetahui <br><br><br>
-            PT................................................
+            {{ $d->pabrik->nama ?? '-' }}
         </div>
         <div class="center">
             Penerima <br><br><br>
-            PT................................................
+            {{ $d->customer->nama ?? '-' }}
         </div>
     </div>
 
