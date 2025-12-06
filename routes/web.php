@@ -118,6 +118,8 @@ Route::post('user/{user}/reset-password', [UserController::class, 'resetPassword
         Route::post('/diskon', [DiskonController::class, 'store'])->name('diskon.store');
         Route::put('/diskon/{id}', [DiskonController::class, 'update'])->name('diskon.update');
         Route::delete('/diskon/{id}', [DiskonController::class, 'destroy'])->name('diskon.destroy');
+        // AJAX search for diskon used by Nota modal
+        Route::get('/diskon/search', [DiskonController::class, 'search'])->name('diskon.search');
 
         // MASTER BESI
         Route::resource('besi', BesiController::class)->only([

@@ -34,53 +34,33 @@
                         x-model="tanggal_nota">
                 </div>
 
-                <!-- SUPPLIER / PABRIK -->
-                <div class="relative">
-                    <label class="block font-medium">Supplier / Pabrik</label>
+                {{-- PABRIK --}}
+                @foreach ($timbangan->unique('pabrik_id') as $d)
+                <div class="mb-3">
+                    <label class="block font-medium">Pabrik</label>
 
                     <input type="text"
-                        x-model="supplierQuery"
-                        @input="searchSupplier"
-                        class="w-full border rounded-lg px-3 py-2"
-                        placeholder="Cari supplier (min. 3 huruf)">
+                        class="w-full border rounded-lg px-3 py-2 bg-gray-100"
+                        value="{{ $d->pabrik->nama ?? '-' }}"
+                        readonly>
 
-                    <input type="hidden" name="supplier_id" x-model="supplier_id">
-
-                    <div x-show="supplierResults.length > 0"
-                        class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50 mt-1">
-                        
-                        <template x-for="item in supplierResults" :key="item.id">
-                            <div class="p-2 hover:bg-gray-200 cursor-pointer"
-                                @click="selectSupplier(item)">
-                                <span x-text="item.nama"></span>
-                            </div>
-                        </template>
-                    </div>
+                    <input type="hidden" name="pabrik_id" value="{{ $d->pabrik->id }}">
                 </div>
+                @endforeach
 
-                <!-- CUSTOMER -->
-                <div class="relative">
+                {{-- CUSTOMER --}}
+                @foreach ($timbangan->unique('customer_id') as $d)
+                <div class="mb-3">
                     <label class="block font-medium">Customer</label>
 
                     <input type="text"
-                        x-model="customerQuery"
-                        @input="searchCustomer"
-                        class="w-full border rounded-lg px-3 py-2"
-                        placeholder="Cari customer (min. 3 huruf)">
+                        class="w-full border rounded-lg px-3 py-2 bg-gray-100"
+                        value="{{ $d->customer->nama ?? '-' }}"
+                        readonly>
 
-                    <input type="hidden" name="customer_id" x-model="customer_id">
-
-                    <div x-show="customerResults.length > 0"
-                        class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50 mt-1">
-
-                        <template x-for="item in customerResults" :key="item.id">
-                            <div class="p-2 hover:bg-gray-200 cursor-pointer"
-                                @click="selectCustomer(item)">
-                                <span x-text="item.nama"></span>
-                            </div>
-                        </template>
-                    </div>
+                    <input type="hidden" name="customer_id" value="{{ $d->customer->id }}">
                 </div>
+                @endforeach
 
             </div>
         </div>
@@ -140,7 +120,71 @@
                         </template>
                     </tbody>
 
+                    <!-- TOTAL ROW -->
+                    <tfoot>
+                        <tr class="text-center font-bold bg-gray-100">
+                            <td colspan="4" class="border px-3 py-2 text-right">Total Barang</td>
+                            <td class="border px-3 py-2" x-text="rupiah(totalBarang())"></td>
+                            <td class="border px-3 py-2"></td>
+                        </tr>
+                    </tfoot>
                 </table>
+            </div>
+        </div>
+
+        <!-- DISKON GLOBAL -->
+<div class="mb-6">
+    <h2 class="text-xl font-semibold mb-2">Diskon Global</h2>
+
+    <div class="flex gap-3 items-center">
+
+        <button 
+            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            @click="openDiskonModal = true; cariDiskonTerdaftar()">
+            Pilih Diskon
+        </button>
+
+        <div class="text-gray-700">
+            <template x-if="diskonNama">
+                <span x-text="diskonNama + ' (' + diskonPersen + '%)'"></span>
+            </template>
+            <template x-if="!diskonNama">
+                <span class="text-gray-400">Belum memilih diskon</span>
+            </template>
+        </div>
+
+    </div>
+</div>
+
+
+        <!-- RINGKASAN TOTAL -->
+        <div class="mb-6 border p-4 rounded-lg bg-gray-50 space-y-2">
+            <h2 class="text-xl font-semibold mb-2">Ringkasan</h2>
+
+            <div class="flex justify-between">
+                <span>Total Barang:</span>
+                <span x-text="rupiah(totalBarang())"></span>
+            </div>
+
+            <div class="flex justify-between items-center gap-2">
+                <span>Diskon Global:</span>
+                <span x-text="rupiah(totalBarang() * diskonPersen/100)"></span>
+            </div>
+
+            <div class="flex justify-between items-center gap-2">
+                <span>PPN 11%:</span>
+                <button 
+                    class="px-3 py-1 rounded text-white"
+                    :class="ppn ? 'bg-green-600' : 'bg-gray-400'"
+                    @click="ppn = !ppn">
+                    <span x-text="ppn ? 'Ada' : 'Tidak'"></span>
+                </button>
+                <span x-text="rupiah(pajak())"></span>
+            </div>
+
+            <div class="flex justify-between font-bold text-lg">
+                <span>Grand Total:</span>
+                <span x-text="rupiah(grandTotal())"></span>
             </div>
         </div>
 
@@ -307,13 +351,91 @@
         </div>
     </div>
 
+    <!-- ============================= -->
+<!-- MODAL DISKON GLOBAL -->
+<!-- ============================= -->
+<div 
+    x-show="openDiskonModal"
+    class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50"
+    x-transition>
+
+    <div class="bg-white p-6 rounded-xl w-full max-w-md shadow space-y-4">
+
+        <h3 class="text-lg font-semibold">Pilih Diskon Global</h3>
+
+        <!-- MODE -->
+        <div>
+            <label class="block font-medium">Jenis Diskon</label>
+            <select x-model="diskonMode" class="w-full border px-3 py-2 rounded">
+                <option value="terdaftar">Diskon Terdaftar</option>
+                <option value="manual">Diskon Manual</option>
+            </select>
+        </div>
+
+        <!-- ====================== -->
+        <!-- DISKON TERDAFTAR -->
+        <!-- ====================== -->
+        <template x-if="diskonMode === 'terdaftar'">
+            <div class="relative">
+
+                <label class="block font-medium">Cari Diskon</label>
+                <input type="text" x-model="searchDiskon"
+                       @input.debounce.300="cariDiskonTerdaftar"
+                       class="w-full border px-3 py-2 rounded"
+                       placeholder="Ketik untuk mencari diskon... (nama atau persen)">
+
+                <div x-show="listDiskon.length > 0"
+                     class="absolute bg-white border mt-1 rounded shadow w-full max-h-40 overflow-y-auto z-50">
+
+                    <template x-for="item in listDiskon" :key="item.id">
+                        <div class="px-3 py-2 cursor-pointer hover:bg-gray-100"
+                             @click="pilihDiskon(item)">
+                            <span x-text="item.nama + ' (' + item.potongan + '%)'"></span>
+                        </div>
+                    </template>
+
+                </div>
+            </div>
+        </template>
+
+        <!-- ====================== -->
+        <!-- DISKON MANUAL -->
+        <!-- ====================== -->
+        <template x-if="diskonMode === 'manual'">
+            <div class="space-y-3">
+
+                <input type="text" class="w-full border px-3 py-2 rounded"
+                       placeholder="Nama Diskon" x-model="manualNama">
+
+                <input type="number" class="w-full border px-3 py-2 rounded"
+                       placeholder="Potongan (%)" x-model.number="manualPotongan">
+
+                <button class="bg-green-600 text-white px-4 py-2 rounded w-full"
+                        @click="simpanDiskonManual">
+                    Simpan Diskon
+                </button>
+
+            </div>
+        </template>
+
+        <!-- CLOSE -->
+        <div class="flex justify-end mt-4">
+            <button @click="openDiskonModal = false" 
+                    class="px-4 py-2 border rounded">
+                Tutup
+            </button>
+        </div>
+
+    </div>
 </div>
 
 
+</div>
+
+</div>
 
 <script>
 function nota() {
-
     const timbangan = @json($timbangan ?? []);
 
     const initialItems = timbangan.map(t => ({
@@ -326,18 +448,19 @@ function nota() {
     }));
 
     return {
-
-        // FORM
+        // ==========================
+        // DATA AWAL
+        // ==========================
         tanggal_nota: '{{ date("Y-m-d") }}',
         jenis_pembayaran: 'tunai',
+
         total_bayar: 0,
         total_bayar_display: "Rp.0",
 
-        // MODAL
+        // MODAL BARANG
         openAddModal: false,
         openEditModal: false,
 
-        // ITEMS
         items: initialItems,
         newItem: { nama: '', berat: '', harga: '', potongan: '' },
 
@@ -345,66 +468,83 @@ function nota() {
         editItem: {},
         editHargaEnabled: false,
 
-        // SEARCH SUPPLIER
-        supplierQuery: "",
-        supplierResults: [],
-        supplier_id: "",
-        searchSupplier() {
-            if (this.supplierQuery.length < 3) {
-                this.supplierResults = [];
-                return;
-            }
-            let list = @json($pabrik);
-            this.supplierResults = list.filter(item =>
-                item.nama.toLowerCase().includes(this.supplierQuery.toLowerCase())
-            );
-        },
-        selectSupplier(item) {
-            this.supplierQuery = item.nama;
-            this.supplier_id = item.id;
-            this.supplierResults = [];
-        },
-
-        // SEARCH CUSTOMER
-        customerQuery: "",
-        customerResults: [],
-        customer_id: "",
-        searchCustomer() {
-            if (this.customerQuery.length < 3) {
-                this.customerResults = [];
-                return;
-            }
-            let list = @json($customer);
-            this.customerResults = list.filter(item =>
-                item.nama.toLowerCase().includes(this.customerQuery.toLowerCase())
-            );
-        },
-        selectCustomer(item) {
-            this.customerQuery = item.nama;
-            this.customer_id = item.id;
-            this.customerResults = [];
-        },
-
         // ACTION PLAN
         actionPlan: false,
         selected: "Action",
-        toggleActionPlan() {
-            this.actionPlan = !this.actionPlan;
-        },
-        pilih(value) {
-            this.selected = value;
-            this.actionPlan = false;
+
+        // ==========================
+        // DISKON
+        // ==========================
+        openDiskonModal: false,
+        diskonMode: "terdaftar",  // terdaftar | manual
+
+        // terdaftar
+        listDiskon: [],
+        searchDiskon: "",
+        diskonTerpilih: null,
+
+        // fetch registered discounts (AJAX)
+        cariDiskonTerdaftar() {
+            // show all when empty or search
+            var q = this.searchDiskon || '';
+            fetch("{{ route('master.diskon.search') }}?q=" + encodeURIComponent(q))
+                .then(res => res.json())
+                .then(data => {
+                    // normalize field names (nama, potongan)
+                    this.listDiskon = data.map(d => ({ id: d.id, nama: d.nama, potongan: d.potongan }));
+                })
+                .catch(err => {
+                    console.error('Gagal mengambil data diskon', err);
+                });
         },
 
-        // TABLE ITEM
+        // manual
+        manualNama: "",
+        manualPotongan: 0,
+
+        // digunakan total
+        diskonPersen: 0,
+        diskonNama: "",
+
+        // ==========================
+        // FUNGSI DISKON
+        // ==========================
+        pilihDiskon(d) {
+            // d = { id, nama, potongan }
+            this.diskonTerpilih = d;
+            this.diskonNama = d.nama;
+            this.diskonPersen = d.potongan;
+            this.openDiskonModal = false;
+        },
+
+        simpanDiskonManual() {
+    fetch("{{ route('master.diskon.store') }}", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+        },
+        body: JSON.stringify({
+            nama: this.manualNama,
+            potongan: this.manualPotongan,
+        })
+    })
+    .then(res => res.json())
+    .then(data => {
+        this.listDiskon.push(data); // langsung nambah ke list
+        this.diskonNama = data.nama;
+        this.diskonPersen = data.potongan;
+        this.openDiskonModal = false;
+    });
+},
+
+
+        // ==========================
+        // FUNGSI ITEM BARANG
+        // ==========================
         tambahItem() {
             const total = (this.newItem.berat * this.newItem.harga) - (this.newItem.potongan || 0);
-
-            this.items.push({
-                ...this.newItem,
-                total: total,
-            });
-
+            this.items.push({ ...this.newItem, total });
             this.newItem = { nama: '', berat: '', harga: '', potongan: '' };
             this.openAddModal = false;
         },
@@ -421,25 +561,64 @@ function nota() {
         },
 
         simpanEdit() {
-            this.editItem.total = (this.editItem.berat * this.editItem.harga) - (this.editItem.potongan || 0);
+            this.editItem.total =
+                (this.editItem.berat * this.editItem.harga) -
+                (this.editItem.potongan || 0);
+
             this.items[this.editIndex] = this.editItem;
             this.openEditModal = false;
         },
 
-        // TOTAL BAYAR FORMAT RUPIAH
+        // ==========================
+        // HITUNG TOTAL
+        // ==========================
+        totalBarang() {
+            return this.items.reduce((sum, i) => sum + i.total, 0);
+        },
+
+        pajak() {
+            const subtotal = this.totalBarang() - (this.totalBarang() * this.diskonPersen / 100);
+            return this.ppn ? subtotal * 0.11 : 0;
+        },
+
+        grandTotal() {
+            const subtotal = this.totalBarang() - (this.totalBarang()*this.diskonPersen/100);
+            return subtotal + this.pajak();
+        },
+
+        // ==========================
+        // PEMBAYARAN
+        // ==========================
         updateTotalBayar(e) {
             let angka = e.target.value.replace(/[^0-9]/g, '');
             this.total_bayar = angka;
             this.total_bayar_display = this.rupiah(angka);
         },
 
+        // ==========================
+        // FORMAT RUPIAH
+        // ==========================
         rupiah(angka) {
             if (!angka) return "Rp.0";
             return "Rp." + new Intl.NumberFormat('id-ID').format(angka);
         },
 
-    }
+        hitungTotal() {}, // trigger reactivity jika diperlukan
+
+        // ==========================
+        // UI TOGGLE
+        // ==========================
+        toggleActionPlan() { 
+            this.actionPlan = !this.actionPlan;
+        },
+
+        pilih(value) {
+            this.selected = value;
+            this.actionPlan = false;
+        },
+    };
 }
 </script>
+
 
 </x-admin-layout>

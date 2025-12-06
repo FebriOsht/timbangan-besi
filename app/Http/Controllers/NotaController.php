@@ -6,6 +6,7 @@ use App\Models\Nota;
 use App\Models\Timbangan;
 use App\Models\Pabrik;
 use App\Models\Customer;
+use App\Models\Diskon;
 use Illuminate\Http\Request;
 
 class NotaController extends Controller
@@ -20,10 +21,18 @@ class NotaController extends Controller
             $timbangan = Timbangan::with('besi')->whereIn('id', $ids)->get();
         }
 
+        // Jika tidak ada data timbangan, tampilkan halaman error
+        if (empty($timbangan) || $timbangan->isEmpty()) {
+            return view('components.error-nota');
+        }
+
         return view('admin.nota.index', [
             'timbangan' => $timbangan,
             'pabrik'    => Pabrik::all(),
             'customer'  => Customer::all(),
+
+            // List diskon untuk preload FE (opsional)
+            'diskon'    => Diskon::orderBy('nama')->get(),
         ]);
     }
 
@@ -38,20 +47,50 @@ class NotaController extends Controller
 
     public function store(Request $request)
     {
+        // Data utama nota + hasil perhitungan dari FE
         $data = $request->validate([
             'nomor_nota'       => 'required|string',
             'tanggal_nota'     => 'required|date',
+
             'nama_supplier'    => 'nullable|string',
             'customer'         => 'nullable|string',
+
+            // Barang utama
             'nama_barang'      => 'required|string',
             'harga_per_kg'     => 'required|integer',
-            // 'total_berat'      -> 'required|integer',
             'potongan'         => 'nullable|integer',
+
             'jenis_pembayaran' => 'required|in:tunai,transfer,tempo',
+
+            // Hasil akhir perhitungan FE
+            'diskon_nama'      => 'nullable|string',
+            'diskon_persen'    => 'nullable|integer',
+            'ppn'              => 'boolean',
+            'subtotal'         => 'required|integer',
+            'total_ppn'        => 'required|integer',
+            'grand_total'      => 'required|integer',
+
             'total_bayar'      => 'required|integer',
+
+            // Items dalam bentuk JSON string (optional)
+            'items'            => 'nullable|string',
         ]);
 
-        Nota::create($data);
+        // Simpan Nota
+        $nota = Nota::create($data);
+
+        // Jika nanti kamu ingin menyimpan item satu per satu:
+        // $items = json_decode($request->items, true);
+        // foreach ($items as $it) {
+        //     NotaItem::create([
+        //         'nota_id' => $nota->id,
+        //         'nama'    => $it['nama'],
+        //         'berat'   => $it['berat'],
+        //         'harga'   => $it['harga'],
+        //         'potongan'=> $it['potongan'],
+        //         'total'   => $it['total'],
+        //     ]);
+        // }
 
         return redirect()->back()->with('success', 'Nota berhasil disimpan.');
     }

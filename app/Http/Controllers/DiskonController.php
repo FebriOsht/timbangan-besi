@@ -75,13 +75,36 @@ public function index(Request $request)
             'potongan'  => 'required|numeric'
         ]);
 
-        Diskon::create([
+        $d = Diskon::create([
             'kode_diskon' => $this->generateKodeDiskon(),
             'nama'        => $request->nama,
             'potongan'    => $request->potongan
         ]);
 
+        // If request expects JSON (AJAX), return the created resource
+        if ($request->wantsJson() || $request->expectsJson() || $request->isJson()) {
+            return response()->json($d, 201);
+        }
+
         return back()->with('success', 'Diskon berhasil ditambahkan!');
+    }
+
+    /**
+     * Search diskon (AJAX) - returns JSON list
+     */
+    public function search(Request $request)
+    {
+        $q = $request->get('q', '');
+
+        $query = Diskon::query();
+
+        if (strlen($q) > 0) {
+            $query->where('nama', 'like', "%{$q}%");
+        }
+
+        $data = $query->orderBy('nama')->limit(50)->get(['id', 'nama', 'potongan']);
+
+        return response()->json($data);
     }
 
     // ============================
