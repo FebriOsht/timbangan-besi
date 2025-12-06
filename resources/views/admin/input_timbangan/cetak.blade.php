@@ -19,12 +19,14 @@
     <h2 class="green">LOGO</h2>
 
     <div class="header">
-        @foreach($data as $d)
-        <div>
-            <h3 class="green">Nota Timbangan</h3>
-            Customer :{{ $d->customer->nama ?? '-' }}<br>
-            Alamat   :{{ $d->customer->alamat ?? '-' }}
-        </div>
+        
+        @foreach ($data->unique('customer_id') as $d)
+    <div>
+        <h3 class="green">Nota Timbangan</h3>
+        Customer : {{ $d->customer->nama ?? '-' }}<br>
+        Alamat   : {{ $d->customer->alamat ?? '-' }}
+    </div>
+
         <div>
             {{ now()->format('F d, Y') }} <br>
             <h4 class="green">{{$d->kode}}</h4>

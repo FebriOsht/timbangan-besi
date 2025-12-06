@@ -151,25 +151,41 @@
                     <td class="py-3 px-2">{{ $b->status }}</td>
                     <td class="py-3 px-2">{{ $b->pabrik->nama ?? '-' }}</td>
                     <td class="py-3 px-2">{{ $b->customer->nama ?? '-' }}</td>
-                    <td class="py-3 px-2 flex justify-center gap-2">
-                        <button
-                            class="bg-blue-600 text-white px-3 py-1 rounded"
-                            @click="openEditModal({{ $b->id }})">
-                            ✎
-                        </button>
+<td class="py-3 px-2 text-center">
+    <div class="flex justify-center items-center gap-2">
 
-                        <form id="delete-{{ $b->id }}" 
-                            action="{{ route('timbangan.destroy', $b->id) }}" 
-                            method="POST">
-                            @csrf @method('DELETE')
+        <!-- EDIT BUTTON -->
+        <button 
+            title="Edit"
+            @click="openEditModal({{ $b->id }})"
+            class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4L18.5 2.5z" />
+            </svg>
+        </button>
 
-                            <button type="button"
-                                onclick="confirmDelete('delete-{{ $b->id }}')" 
-                                class="bg-red-600 text-white px-3 py-1 rounded">
-                                🗑
-                            </button>
-                        </form>
-                    </td>
+        <!-- DELETE BUTTON -->
+        <form id="delete-{{ $b->id }}" 
+              action="{{ route('timbangan.destroy', $b->id) }}" 
+              method="POST">
+            @csrf 
+            @method('DELETE')
+
+            <button 
+                type="button"
+                title="Hapus"
+                onclick="confirmDelete('delete-{{ $b->id }}')" 
+                class="bg-red-600 text-white p-2 rounded hover:bg-red-700">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+            </button>
+        </form>
+
+    </div>
+</td>
+
 
                 </tr>
                 @endforeach
@@ -290,7 +306,17 @@
 
                 </div>
 
-                <button class="bg-green-600 text-white mt-4 px-4 py-2 rounded w-full">Simpan</button>
+                <div class="flex gap-3 mt-4">
+    <button @click="addModal = false" class="bg-gray-500 text-white px-4 py-2 rounded w-full">
+        Close
+    </button>
+    <button class="bg-green-600 text-white px-4 py-2 rounded w-full">
+        Simpan
+    </button>
+
+    
+</div>
+
             </form>
 
         </div>
@@ -421,7 +447,22 @@
 
                 </div>
 
-                <button class="bg-blue-600 text-white px-3 py-2 rounded w-full mt-4">Update</button>
+ <div class="flex gap-3 mt-4">
+    <button 
+        type="button"
+        @click="editModal = false"
+        class="bg-gray-500 text-white px-3 py-2 rounded w-full">
+        Close
+    </button>
+
+    <button 
+        type="submit"
+        class="bg-orange-500 text-white px-3 py-2 rounded w-full">
+        Update
+    </button>
+</div>
+
+
             </form>
 
         </div>
