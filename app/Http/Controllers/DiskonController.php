@@ -2,38 +2,112 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Diskon;   // ← yang benar
+use App\Models\Diskon;
 use Illuminate\Http\Request;
 
 class DiskonController extends Controller
 {
-    public function index()
+    // ============================
+    // GENERATE KODE DISKON
+    // ============================
+    private function generateKodeDiskon()
     {
-        $data = Diskon::all();  
-        return view('admin.master.diskon.index', compact('data'));
+        $bulan = date('m');
+        $tahun = date('y');
+
+        $prefix = "D{$bulan}{$tahun}";
+
+        // Ambil nomor urut terakhir berdasarkan prefix
+        $last = Diskon::where('kode_diskon', 'like', $prefix . '%')
+            ->orderBy('kode_diskon', 'desc')
+            ->first();
+
+        if (!$last) {
+            $urut = 1;
+        } else {
+            // Ambil 3 digit terakhir
+            $lastNum = (int)substr($last->kode_diskon, -3);
+            $urut = $lastNum + 1;
+        }
+
+        return $prefix . str_pad($urut, 3, '0', STR_PAD_LEFT);
     }
 
+    // ============================
+    // INDEX
+    // ============================
+public function index(Request $request)
+{
+    $query = Diskon::query();
+
+    // =============== SEARCH ===============
+    if ($request->filled('search')) {
+        $query->where('nama', 'like', '%' . $request->search . '%');
+    }
+
+    // =============== SORT ===============
+    $sortBy = $request->get('sort_by', 'nama');   
+    $sortDir = $request->get('sort_dir', 'asc');  
+
+    if (!in_array($sortBy, ['nama', 'potongan'])) {
+        $sortBy = 'nama';
+    }
+
+    $query->orderBy($sortBy, $sortDir);
+
+    // =============== PAGINATION ===============
+    $data = $query->paginate(10)->withQueryString();
+
+    // Auto-generate kode baru
+    $kodeBaru = $this->generateKodeDiskon();
+
+    return view('admin.master.diskon.index', compact('data', 'kodeBaru', 'sortBy', 'sortDir'));
+}
+
+
+    // ============================
+    // STORE
+    // ============================
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
-            'potongan' => 'required|numeric'
+            'nama'      => 'required',
+            'potongan'  => 'required|numeric'
         ]);
 
-        Diskon::create($request->all());
+        Diskon::create([
+            'kode_diskon' => $this->generateKodeDiskon(),
+            'nama'        => $request->nama,
+            'potongan'    => $request->potongan
+        ]);
 
         return back()->with('success', 'Diskon berhasil ditambahkan!');
     }
 
+    // ============================
+    // UPDATE
+    // ============================
     public function update(Request $request, $id)
     {
         $diskon = Diskon::findOrFail($id);
 
-        $diskon->update($request->all());
+        $request->validate([
+            'nama'      => 'required',
+            'potongan'  => 'required|numeric'
+        ]);
+
+        // kode_diskon tidak boleh berubah
+        $diskon->update([
+            'nama'      => $request->nama,
+            'potongan'  => $request->potongan
+        ]);
 
         return back()->with('success', 'Diskon berhasil diupdate!');
     }
 
+    // ============================
+    // DELETE
+    // ============================
     public function destroy($id)
     {
         Diskon::findOrFail($id)->delete();
