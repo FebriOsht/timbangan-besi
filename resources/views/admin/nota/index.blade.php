@@ -20,7 +20,7 @@
                 <!-- NOMOR NOTA -->
                 <div>
                     <label class="block font-medium">Nomor Nota</label>
-                    <input type="text" 
+                    <input type="text" id="nomor_nota_display"
                         class="w-full border rounded-lg px-3 py-2 bg-gray-100"
                         placeholder="Auto Generate"
                         disabled>
@@ -157,110 +157,136 @@
 </div>
 
 
-        <!-- RINGKASAN TOTAL -->
-        <div class="mb-6 border p-4 rounded-lg bg-gray-50 space-y-2">
-            <h2 class="text-xl font-semibold mb-2">Ringkasan</h2>
+ <!-- RINGKASAN TOTAL -->
+<div class="mb-6 border p-4 rounded-lg bg-gray-50 space-y-4" x-data>
+    
+<!-- TOGGLE PPN -->
+<div class="flex items-center justify-between pb-3 border-b">
+    <span class="font-semibold">PPN (11%)</span>
 
-            <div class="flex justify-between">
-                <span>Total Barang:</span>
-                <span x-text="rupiah(totalBarang())"></span>
-            </div>
+    <label class="inline-flex items-center cursor-pointer">
+        <input type="checkbox" class="sr-only" x-model="ppn">
 
-            <div class="flex justify-between items-center gap-2">
-                <span>Diskon Global:</span>
-                <span x-text="rupiah(totalBarang() * diskonPersen/100)"></span>
-            </div>
+        <!-- WRAPPER -->
+        <div class="relative w-12 h-6 flex items-center rounded-full p-1 transition-colors duration-300"
+             :class="ppn ? 'bg-green-500' : 'bg-gray-300'">
 
-            <div class="flex justify-between items-center gap-2">
-                <span>PPN 11%:</span>
-                <button 
-                    class="px-3 py-1 rounded text-white"
-                    :class="ppn ? 'bg-green-600' : 'bg-gray-400'"
-                    @click="ppn = !ppn">
-                    <span x-text="ppn ? 'Ada' : 'Tidak'"></span>
-                </button>
-                <span x-text="rupiah(pajak())"></span>
-            </div>
-
-            <div class="flex justify-between font-bold text-lg">
-                <span>Grand Total:</span>
-                <span x-text="rupiah(grandTotal())"></span>
-            </div>
+            <!-- DOT -->
+            <div class="w-5 h-5 bg-white rounded-full shadow transform duration-300"
+                 :class="ppn ? 'translate-x-6' : 'translate-x-1'"></div>
         </div>
 
-        <!-- PEMBAYARAN -->
-        <div>
-            <h2 class="text-xl font-semibold mb-4">Pembayaran</h2>
+        <span class="ml-3 font-medium" x-text="ppn ? 'Aktif' : 'Tidak'"></span>
+    </label>
+</div>
 
-            <div class="flex gap-6 mb-4">
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="pay" value="tunai" x-model="jenis_pembayaran">
-                    <span>Tunai</span>
-                </label>
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="pay" value="transfer" x-model="jenis_pembayaran">
-                    <span>Transfer</span>
-                </label>
-                <label class="flex items-center gap-2">
-                    <input type="radio" name="pay" value="tempo" x-model="jenis_pembayaran">
-                    <span>Tempo</span>
-                </label>
-            </div>
 
-            <div>
-                <label class="block font-medium">Total Bayar (Rp)</label>
-                <input type="text"
-                    x-model="total_bayar_display"
-                    @input="updateTotalBayar"
-                    class="w-full border rounded-lg px-3 py-2"
-                    placeholder="Rp.0">
-            </div>
-        </div>
 
-        <!-- BUTTONS -->
-        <div class="flex flex-wrap items-center gap-4">
 
-            <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-                Simpan
-            </button>
 
-            <div class="relative">
+    <h2 class="text-xl font-semibold">Ringkasan</h2>
 
-                <button 
-                    @click="toggleActionPlan()"
-                    class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-                    <span x-text="selected"></span>
-                </button>
-
-                <div 
-                    class="absolute right-0 bottom-full mb-2 w-44 bg-white border rounded-lg shadow-md p-2 z-20 space-y-1"
-                    x-show="actionPlan"
-                    @click.outside="actionPlan = false"
-                    x-transition
-                >
-                    <button 
-                        @click="pilih('Nota Pembelian')" 
-                        class="block w-full bg-green-500 text-white px-3 py-1 rounded-lg">
-                        Nota Pembelian
-                    </button>
-
-                    <button 
-                        @click="pilih('Nota Penjualan')" 
-                        class="block w-full bg-green-500 text-white px-3 py-1 rounded-lg">
-                        Nota Penjualan
-                    </button>
-                </div>
-
-            </div>
-
-            <a href="{{ route('admin.nota.cetak') }}"
-                class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 inline-block">
-                Simpan & Cetak Nota
-            </a>
-
-        </div>
-
+    <!-- TOTAL BARANG -->
+    <div class="flex justify-between">
+        <span>Total Barang:</span>
+        <span class="font-medium" x-text="rupiah(totalBarang())"></span>
     </div>
+
+    <!-- DISKON GLOBAL (MINUS) -->
+    <div class="flex justify-between">
+        <span>Diskon Global:</span>
+        <span class="font-medium text-red-600" x-text="'- ' + rupiah(totalBarang() * diskonPersen/100)"></span>
+    </div>
+
+    <!-- PPN (PLUS) -->
+    <template x-if="ppn">
+        <div class="flex justify-between">
+            <span>PPN 11%:</span>
+            <span class="font-medium text-green-600" x-text="'+ ' + rupiah(pajak())"></span>
+        </div>
+    </template>
+
+    <!-- GRAND TOTAL -->
+    <div class="flex justify-between font-bold text-xl border-t pt-3">
+        <span>Grand Total:</span>
+        <span x-text="rupiah(grandTotal())"></span>
+    </div>
+</div>
+
+
+<!-- PEMBAYARAN -->
+<div x-data>
+    <h2 class="text-xl font-semibold mb-4">Pembayaran</h2>
+
+    <!-- Jenis Pembayaran -->
+    <div class="flex gap-6 mb-4">
+        <label class="flex items-center gap-2">
+            <input type="radio" name="pay" value="tunai" x-model="jenis_pembayaran">
+            <span>Tunai</span>
+        </label>
+        <label class="flex items-center gap-2">
+            <input type="radio" name="pay" value="transfer" x-model="jenis_pembayaran">
+            <span>Transfer</span>
+        </label>
+        <label class="flex items-center gap-2">
+            <input type="radio" name="pay" value="tempo" x-model="jenis_pembayaran">
+            <span>Tempo</span>
+        </label>
+    </div>
+
+    <!-- Tombol 50% & 100% -->
+    <div class="flex gap-3 mb-4">
+        <button
+            @click="setPembayaran(50)"
+            class="px-4 py-2 rounded-lg font-medium border transition"
+            :class="persen_pembayaran === 50 ? 'bg-blue-600 text-white' : 'bg-gray-200'">
+            Bayar 50%
+        </button>
+
+        <button
+            @click="setPembayaran(100)"
+            class="px-4 py-2 rounded-lg font-medium border transition"
+            :class="persen_pembayaran === 100 ? 'bg-green-600 text-white' : 'bg-gray-200'">
+            Bayar 100%
+        </button>
+    </div>
+
+    <!-- Input Manual -->
+    <div>
+        <label class="block font-medium">Total Bayar (Rp)</label>
+        <input type="text"
+            x-model="total_bayar_display"
+            @input="updateTotalBayarManual"
+            class="w-full border rounded-lg px-3 py-2"
+            placeholder="Rp.0">
+    </div>
+</div>
+
+
+<div class="flex flex-wrap items-center gap-4">
+
+    <!-- S I M P A N -->
+    {{-- <button @click="saveNota()" :disabled="saving || saved"
+        class="inline-flex items-center justify-center bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-60">
+        <template x-if="!saving">Simpan</template>
+        <template x-if="saving">Menyimpan...</template>
+    </button> --}}
+
+    <!-- DROPDOWN JENIS NOTA -->
+    <select x-model="jenisNota"
+        class="bg-white border border-gray-300 text-gray-700 px-6 py-2 rounded-lg shadow-sm focus:ring-green-500 focus:border-green-500">
+        <option value="Nota Pembelian">Nota Pembelian</option>
+        <option value="Nota Penjualan">Nota Penjualan</option>
+    </select>
+
+    <!-- S I M P A N  &  C E T A K -->
+    <button @click="saveAndPrint()" :disabled="saving"
+        class="inline-flex items-center justify-center bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 disabled:opacity-60">
+        Simpan & Cetak Nota
+    </button>
+
+</div>
+
 
     <!-- ============================= -->
     <!-- MODAL TAMBAH BARANG -->
@@ -433,6 +459,7 @@
 </div>
 
 </div>
+<script src="//unpkg.com/alpinejs" defer></script>
 
 <script>
 function nota() {
@@ -440,6 +467,7 @@ function nota() {
 
     const initialItems = timbangan.map(t => ({
         id: t.id,
+        besi_id: t.besi_id,
         nama: t.besi?.nama || 'Besi',
         berat: t.berat,
         harga: t.harga,
@@ -454,6 +482,11 @@ function nota() {
         tanggal_nota: '{{ date("Y-m-d") }}',
         jenis_pembayaran: 'tunai',
 
+        // PPN (default aktif)
+        ppn: true,
+
+        // Pembayaran
+        persen_pembayaran: 100,   // default 100%
         total_bayar: 0,
         total_bayar_display: "Rp.0",
 
@@ -470,47 +503,39 @@ function nota() {
 
         // ACTION PLAN
         actionPlan: false,
-        selected: "Action",
+        jenisNota: "Nota Pembelian",  // default
 
         // ==========================
         // DISKON
         // ==========================
         openDiskonModal: false,
-        diskonMode: "terdaftar",  // terdaftar | manual
+        diskonMode: "terdaftar",  
 
-        // terdaftar
         listDiskon: [],
         searchDiskon: "",
         diskonTerpilih: null,
-
-        // fetch registered discounts (AJAX)
-        cariDiskonTerdaftar() {
-            // show all when empty or search
-            var q = this.searchDiskon || '';
-            fetch("{{ route('master.diskon.search') }}?q=" + encodeURIComponent(q))
-                .then(res => res.json())
-                .then(data => {
-                    // normalize field names (nama, potongan)
-                    this.listDiskon = data.map(d => ({ id: d.id, nama: d.nama, potongan: d.potongan }));
-                })
-                .catch(err => {
-                    console.error('Gagal mengambil data diskon', err);
-                });
-        },
 
         // manual
         manualNama: "",
         manualPotongan: 0,
 
-        // digunakan total
         diskonPersen: 0,
         diskonNama: "",
 
         // ==========================
         // FUNGSI DISKON
         // ==========================
+        cariDiskonTerdaftar() {
+            var q = this.searchDiskon || '';
+            fetch("{{ route('master.diskon.search') }}?q=" + encodeURIComponent(q))
+                .then(res => res.json())
+                .then(data => {
+                    this.listDiskon = data.map(d => ({ id: d.id, nama: d.nama, potongan: d.potongan }));
+                })
+                .catch(err => console.error('Gagal mengambil data diskon', err));
+        },
+
         pilihDiskon(d) {
-            // d = { id, nama, potongan }
             this.diskonTerpilih = d;
             this.diskonNama = d.nama;
             this.diskonPersen = d.potongan;
@@ -518,29 +543,130 @@ function nota() {
         },
 
         simpanDiskonManual() {
-    fetch("{{ route('master.diskon.store') }}", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+            fetch("{{ route('master.diskon.store') }}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content
+                },
+                body: JSON.stringify({
+                    nama: this.manualNama,
+                    potongan: this.manualPotongan,
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                this.listDiskon.push(data);
+                this.diskonNama = data.nama;
+                this.diskonPersen = data.potongan;
+                this.openDiskonModal = false;
+            });
         },
-        body: JSON.stringify({
-            nama: this.manualNama,
-            potongan: this.manualPotongan,
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        this.listDiskon.push(data); // langsung nambah ke list
-        this.diskonNama = data.nama;
-        this.diskonPersen = data.potongan;
-        this.openDiskonModal = false;
-    });
-},
-
 
         // ==========================
-        // FUNGSI ITEM BARANG
+        // SAVE / PRINT
+        // ==========================
+        saving: false,
+        savedNotaId: null,
+        generatedKode: null,
+        saved: false,
+
+        async saveNota() {
+            if (this.saving) return;
+            this.saving = true;
+
+            // ambil pabrik/customer dari hidden inputs jika tersedia
+            const customerInput = document.querySelector('input[name="customer_id"]');
+            const pabrikInput = document.querySelector('input[name="pabrik_id"]');
+            
+            // ambil besi_id & timbangan_id dari item pertama
+            const firstItem = this.items && this.items.length > 0 ? this.items[0] : null;
+            const besiId = firstItem?.besi_id || null;
+            const timbanganId = firstItem?.id || null;
+            
+            const payload = {
+                tanggal_nota: this.tanggal_nota,
+                jenis_pembayaran: this.jenis_pembayaran,
+                ppn: this.ppn ? 1 : 0,
+                subtotal: Math.round(this.totalBarang()),
+                total_ppn: Math.round(this.pajak()),
+                grand_total: Math.round(this.grandTotal()),
+                total_bayar: Math.round(this.total_bayar || this.grandTotal()),
+                items: JSON.stringify(this.items || []),
+                customer_id: customerInput ? customerInput.value : null,
+                pabrik_id: pabrikInput ? pabrikInput.value : null,
+                besi_id: besiId,
+                timbangan_id: timbanganId,
+                jenis_nota: this.jenisNota,
+            };
+
+            try {
+                const res = await fetch("{{ route('nota.store') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                    },
+                    credentials: 'same-origin',
+                    body: JSON.stringify(payload)
+                });
+
+                let data;
+                try {
+                    data = await res.json();
+                } catch (e) {
+                    // server returned non-JSON (likely HTML error page). Grab text for debug.
+                    const text = await res.text();
+                    throw new Error('Server response is not JSON: ' + text.substring(0, 300));
+                }
+
+                if (!res.ok) {
+                    throw new Error(data?.message || JSON.stringify(data) || 'Gagal menyimpan');
+                }
+
+                this.savedNotaId = data.nota_id;
+                this.generatedKode = data.kode_nota;
+
+                // isi field Nomor Nota (yang disable)
+                const nomorInput = document.getElementById('nomor_nota_display');
+                if (nomorInput) nomorInput.value = this.generatedKode;
+
+                // beri umpan balik singkat
+                alert('Nota tersimpan. Kode: ' + this.generatedKode);
+
+                // setelah tersimpan, non-aktifkan tombol Simpan untuk mencegah double
+                this.saved = true;
+            } catch (err) {
+                console.error(err);
+                alert('Gagal menyimpan nota: ' + (err.message || err));
+            } finally {
+                this.saving = false;
+            }
+        },
+
+        async saveAndPrint() {
+            // simpan dulu
+            await this.saveNota();
+
+            // jika berhasil disimpan, buka halaman cetak dengan ids timbangan
+            if (this.savedNotaId) {
+                const ids = this.items
+                    .filter(i => i.id)
+                    .map(i => i.id)
+                    .join(',');
+
+                const url = new URL("{{ route('admin.nota.cetak') }}", window.location.origin);
+                if (ids) url.searchParams.set('ids', ids);
+                // buka di tab baru
+                window.open(url.toString(), '_blank');
+            } else {
+                alert('Nota belum tersimpan. Silakan coba lagi.');
+            }
+        },
+
+        // ==========================
+        // ITEM BARANG
         // ==========================
         tambahItem() {
             const total = (this.newItem.berat * this.newItem.harga) - (this.newItem.potongan || 0);
@@ -582,13 +708,29 @@ function nota() {
         },
 
         grandTotal() {
-            const subtotal = this.totalBarang() - (this.totalBarang()*this.diskonPersen/100);
+            const subtotal = this.totalBarang() - (this.totalBarang() * this.diskonPersen / 100);
             return subtotal + this.pajak();
         },
 
         // ==========================
-        // PEMBAYARAN
+        // PEMBAYARAN: 50% & 100%
         // ==========================
+        setPembayaran(persen) {
+            this.persen_pembayaran = persen;
+            let total = this.grandTotal();
+            let bayar = (total * persen) / 100;
+            this.total_bayar = bayar;
+            this.total_bayar_display = this.rupiah(bayar);
+        },
+
+        updateTotalBayarManual() {
+            let angka = this.total_bayar_display.replace(/[^0-9]/g, '');
+            this.total_bayar = parseInt(angka || 0);
+            this.persen_pembayaran = null; // batal 50/100%
+            this.total_bayar_display = this.rupiah(this.total_bayar);
+        },
+
+        // BACKWARD COMPAT (kalau masih dipanggil)
         updateTotalBayar(e) {
             let angka = e.target.value.replace(/[^0-9]/g, '');
             this.total_bayar = angka;
@@ -603,22 +745,16 @@ function nota() {
             return "Rp." + new Intl.NumberFormat('id-ID').format(angka);
         },
 
-        hitungTotal() {}, // trigger reactivity jika diperlukan
-
         // ==========================
         // UI TOGGLE
         // ==========================
         toggleActionPlan() { 
             this.actionPlan = !this.actionPlan;
         },
-
-        pilih(value) {
-            this.selected = value;
-            this.actionPlan = false;
-        },
     };
 }
 </script>
+
 
 
 </x-admin-layout>

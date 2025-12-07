@@ -14,15 +14,20 @@
     <!-- HEADER RECEIPT -->
     <div class="flex justify-between mt-4">
         <div>
+            @foreach ($timbangan->unique('nota_id') as $d)
             <div class="flex items-center space-x-2">
                 <span class="text-[#0fa958] text-2xl font-bold">Sales Receipt #</span>
-                <span class="text-[#0fa958] text-2xl font-light">202511-001</span>
+                <span class="text-[#0fa958] text-2xl font-light">{{ $d->nota->kode_nota ?? '-' }}</span>
             </div>
+            @endforeach
+            
+            @foreach ($timbangan->unique('customer_id') as $d)
 
             <p class="mt-2">
-                <span class="font-semibold text-gray-600">Customer :</span> Tn. Elang Damar <br>
+                <span class="font-semibold text-gray-600">Customer :</span> {{ $d->customer->nama ?? '-' }} <br>
                 <span class="font-semibold text-gray-600">Receipt by :</span> Nia
             </p>
+            @endforeach
         </div>
 
         <div class="text-right text-gray-500">
