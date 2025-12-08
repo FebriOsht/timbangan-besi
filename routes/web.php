@@ -85,13 +85,17 @@ Route::middleware(['auth'])->group(function () {
     */
     Route::prefix('master')->name('master.')->group(function () {
 
-        // USERS
-        Route::resource('user', UserController::class)->names([
-            'index'   => 'user',
-            'store'   => 'user.store',
-            'update'  => 'user.update',
-            'destroy' => 'user.destroy',
-        ]);
+        // USER
+Route::resource('user', UserController::class)->names([
+    'index'   => 'user',
+    'store'   => 'user.store',
+    'update'  => 'user.update',
+    'destroy' => 'user.destroy',
+]);
+
+// RESET PASSWORD (custom)
+Route::post('user/{user}/reset-password', [UserController::class, 'resetPassword'])
+    ->name('user.reset_password');
 
         // PABRIK
         Route::resource('pabrik', PabrikController::class)->names([
@@ -116,6 +120,8 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/diskon', [DiskonController::class, 'store'])->name('diskon.store');
         Route::put('/diskon/{id}', [DiskonController::class, 'update'])->name('diskon.update');
         Route::delete('/diskon/{id}', [DiskonController::class, 'destroy'])->name('diskon.destroy');
+        // AJAX search for diskon used by Nota modal
+        Route::get('/diskon/search', [DiskonController::class, 'search'])->name('diskon.search');
 
         // MASTER BESI
         Route::resource('besi', BesiController::class)->only([
@@ -145,7 +151,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/timbangan', [TimbanganController::class, 'store'])->name('timbangan.store');
     Route::put('/timbangan/{id}', [TimbanganController::class, 'update'])->name('timbangan.update');
     Route::delete('/timbangan/{id}', [TimbanganController::class, 'destroy'])->name('timbangan.destroy');
-Route::get('/timbangan/get-besi/{id}', [TimbanganController::class, 'getBesi']);
+    Route::get('/timbangan/get-besi/{id}', [TimbanganController::class, 'getBesi']);
+    Route::get('/timbangan/get-timbangan/{id}', [TimbanganController::class, 'getTimbangan']);
 
     // Cetak Timbangan
     Route::get('/timbangan/cetak', [TimbanganController::class, 'cetak'])
@@ -153,6 +160,9 @@ Route::get('/timbangan/get-besi/{id}', [TimbanganController::class, 'getBesi']);
     Route::post('/timbangan/set-cetak', [TimbanganController::class, 'setCetak'])->name('timbangan.setCetak');
 Route::post('/timbangan/set-transfer', [TimbanganController::class, 'setTransfer'])->name('timbangan.setTransfer');
 Route::post('/timbangan/mark-cetak', [TimbanganController::class, 'markCetak']);
+Route::get('/search-pabrik', [TimbanganController::class,'searchPabrik'])->name('pabrik.search');
+Route::get('/search-customer', [TimbanganController::class,'searchCustomer'])->name('customer.search');
+
 
 
 
@@ -170,14 +180,34 @@ Route::post('/timbangan/mark-cetak', [TimbanganController::class, 'markCetak']);
     Route::get('/admin/nota/cetak', [NotaController::class, 'cetak'])
         ->name('admin.nota.cetak');
 
+    Route::get('/nota/create', [NotaController::class, 'create'])
+        ->name('nota.create');
+
+
 
     /*
     |--------------------------------------------------------------------------
     | MUTASI STOCK
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/mutasi-stock', [MutasiStockController::class, 'index'])
-        ->name('admin.mutasi_stock.index');
+    Route::prefix('admin/mutasi-stock')->name('admin.mutasi_stock.')->group(function () {
+
+    // INDEX
+    Route::get('/', [MutasiStockController::class, 'index'])
+        ->name('index');
+
+    // STORE
+    Route::post('/store', [MutasiStockController::class, 'store'])
+        ->name('store');
+
+    // DELETE
+    Route::delete('/{id}', [MutasiStockController::class, 'destroy'])
+        ->name('destroy');
+
+    // AJAX GET DATA
+    Route::get('/get-data', [MutasiStockController::class, 'getData'])
+        ->name('getdata');
+});
 
 
     /*
@@ -194,8 +224,14 @@ Route::post('/timbangan/mark-cetak', [TimbanganController::class, 'markCetak']);
     | LAPORAN
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/laporan', [LaporanController::class, 'index'])
-        ->name('admin.laporan.index');
+Route::get('/admin/laporan', [LaporanController::class, 'index'])
+    ->name('admin.laporan.index');
+
+Route::get('/admin/laporan/pembelian', [LaporanController::class, 'pembelian'])
+    ->name('admin.laporan.pembelian');
+
+Route::get('/admin/laporan/penjualan', [LaporanController::class, 'penjualan'])
+    ->name('admin.laporan.penjualan');
 
 
     /*
