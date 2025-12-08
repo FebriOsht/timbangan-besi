@@ -5,6 +5,7 @@ namespace App\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Blade;
 use App\View\Components\Auth\Layout;
+use Illuminate\Support\Facades\Schema;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -15,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
+
         Blade::component('auth.layout', Layout::class);
         Blade::component('layouts.admin', \App\View\Components\Layouts\Admin::class);
     }

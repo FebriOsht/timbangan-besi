@@ -26,6 +26,7 @@ class TimbanganSeeder extends Seeder
             $hargaTotal = $berat * $besi->harga;
             
             $data[] = [
+                'besi_id' => '01', // TAMBAHKAN INI
                 'kode' => $besi->kode, // Ambil kode dari besi
                 'jenis' => $besi->jenis, // Ambil jenis dari besi
                 'berat' => (string) $berat, // Convert ke string sesuai migrasi

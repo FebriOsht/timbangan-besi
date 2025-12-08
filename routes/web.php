@@ -30,9 +30,9 @@ use App\Http\Controllers\UserSettingController;
 | PUBLIC ROUTES
 |--------------------------------------------------------------------------
 */
-Route::get('/', function () {
-    return view('welcome'); // nanti diganti home
-});
+// Route::get('/', function () {
+//     return view('welcome'); // nanti diganti home
+// });
 
 Route::get('/test', function () {
     return view('test');
@@ -61,6 +61,8 @@ Route::middleware(['auth'])->group(function () {
     | DASHBOARD
     |--------------------------------------------------------------------------
     */
+    Route::get('/', [DashboardController::class, 'index'])->name('home');
+
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->middleware('verified')
         ->name('dashboard');

@@ -17,8 +17,12 @@ return new class extends Migration
             // Kode Timbangan: TYYMM###
             $table->string('kode')->unique();
 
-            // Relasi ke tabel besi
+            // Relasi ke tabel besi (SUDAH ADA: besi_id)
             $table->unsignedBigInteger('besi_id');
+
+            // --- KODE BARU DITAMBAHKAN DI SINI ---
+            $table->string('jenis', 50)->nullable(); // Kolom 'jenis' yang hilang
+            // -------------------------------------
 
             // Berat yang ditimbang
             $table->decimal('berat', 10, 2);
