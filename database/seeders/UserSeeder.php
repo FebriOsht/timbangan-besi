@@ -10,40 +10,60 @@ class UserSeeder extends Seeder
 {
     public function run()
     {
-        // Hapus data existing dulu
-        DB::table('users')->truncate();
-        
-        // Buat user baru
-        DB::table('users')->insert([
+        $data = [
+            // ===== ADMIN =====
             [
-                'name' => 'Administrator',
-                'email' => 'admin@example.com',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password123'),
-                'role' => 'admin',
-                'remember_token' => \Illuminate\Support\Str::random(10),
-                'created_at' => now(),
-                'updated_at' => now(),
+                'first_name'     => 'admin',
+                'last_name'      => 'admin',
+                'email'          => 'admin@example.com',
+                'password'       => Hash::make('123456789'),
+                'phone_code'     => '+62',
+                'phone_number'   => '8110000001',
+                'profile_photo'  => null,
+                'role'           => 'admin',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ],
+
+            // ===== USERS =====
+            [
+                'first_name'     => 'user',
+                'last_name'      => 'user',
+                'email'          => 'user1@example.com',
+                'password'       => Hash::make('123456789'),
+                'phone_code'     => '+62',
+                'phone_number'   => '8110000002',
+                'profile_photo'  => null,
+                'role'           => 'user',
+                'created_at'     => now(),
+                'updated_at'     => now(),
             ],
             [
-                'name' => 'Regular User', 
-                'email' => 'user@example.com',
-                'email_verified_at' => now(),
-                'password' => Hash::make('password123'),
-                'role' => 'user',
-                'remember_token' => \Illuminate\Support\Str::random(10),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]
-        ]);
+                'first_name'     => 'user',
+                'last_name'      => 'user',
+                'email'          => 'user2@example.com',
+                'password'       => Hash::make('123456789'),
+                'phone_code'     => '+62',
+                'phone_number'   => '8110000003',
+                'profile_photo'  => null,
+                'role'           => 'user',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ],
+            [
+                'first_name'     => 'user',
+                'last_name'      => 'user',
+                'email'          => 'user3@example.com',
+                'password'       => Hash::make('123456789'),
+                'phone_code'     => '+62',
+                'phone_number'   => '8110000004',
+                'profile_photo'  => null,
+                'role'           => 'user',
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ],
+        ];
 
-        // Seed lainnya
-        $this->call([
-            BesiSeeder::class,
-            DiskonSeeder::class,
-            CustomerSeeder::class,
-            PabrikSeeder::class,
-            // TimbanganSeeder::class,
-        ]);
+        DB::table('users')->insert($data);
     }
 }

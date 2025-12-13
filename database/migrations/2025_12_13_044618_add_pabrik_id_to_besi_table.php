@@ -10,9 +10,9 @@ return new class extends Migration
     {
         Schema::table('besi', function (Blueprint $table) {
             $table->foreignId('pabrik_id')
-                  ->after('id')
-                  ->constrained('pabrik')
-                  ->cascadeOnDelete();
+                ->after('id')
+                ->constrained('pabriks')
+                ->cascadeOnDelete();
         });
     }
 

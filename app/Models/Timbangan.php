@@ -9,7 +9,7 @@ class Timbangan extends Model
     protected $fillable = [
     'kode',
     'besi_id',
-    'jenis',
+    // 'jenis',
     'berat',
     'harga',
     'status',

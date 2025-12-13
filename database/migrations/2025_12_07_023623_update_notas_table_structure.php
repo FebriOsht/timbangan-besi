@@ -36,7 +36,7 @@ return new class extends Migration
 
             $table->integer('total_bayar')->default(0);
 
-            $table->date('tanggal_nota')->nullable();
+            
 
             $table->enum('jenis_nota', ['Pembelian', 'Penjualan'])
                 ->default('Pembelian');
@@ -59,7 +59,6 @@ return new class extends Migration
                 'user_id',
                 'jenis_pembayaran',
                 'total_bayar',
-                'tanggal_nota',
                 'jenis_nota',
                 'ppn',
             ]);

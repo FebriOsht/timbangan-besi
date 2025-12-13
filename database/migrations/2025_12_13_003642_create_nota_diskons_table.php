@@ -28,9 +28,9 @@ return new class extends Migration {
                   ->nullOnDelete();
 
             // JIKA DISKON MANUAL
-            $table->enum('tipe', ['master', 'custom']);
-            $table->enum('jenis', ['percent', 'nominal']);
-            $table->decimal('nilai', 12, 2);
+            $table->enum('tipe', ['master', 'custom'])->nullable();
+            $table->enum('jenis', ['percent', 'nominal'])->nullable();
+            $table->decimal('nilai', 12, 2)->nullable();
 
             $table->string('keterangan')->nullable();
 
