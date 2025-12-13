@@ -2,7 +2,6 @@
 
     <!-- RINGKASAN / SUMMARY CARDS -->
     <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-
         <div class="bg-green-600 text-white p-5 rounded-lg">
             <p class="text-sm">Total Stok Saat Ini</p>
             <h3 class="text-3xl font-bold mt-2">{{ $totalBesiBerstock }}</h3>
@@ -11,27 +10,27 @@
 
         <div class="bg-green-600 text-white p-5 rounded-lg">
             <p class="text-sm">Total Pembelian Hari Ini</p>
-            <h3 class="text-3xl font-bold mt-2">0</h3>
+            <h3 class="text-3xl font-bold mt-2">{{ number_format($totalPembelianHariIni) }}</h3>
             <p class="text-xs opacity-80">kg</p>
         </div>
 
         <div class="bg-green-600 text-white p-5 rounded-lg">
             <p class="text-sm">Total Penjualan Hari Ini</p>
-            <h3 class="text-3xl font-bold mt-2">0</h3>
+            <h3 class="text-3xl font-bold mt-2">{{ number_format($totalPenjualanHariIni) }}</h3>
             <p class="text-xs opacity-80">kg</p>
         </div>
 
         <div class="bg-green-600 text-white p-5 rounded-lg">
             <p class="text-sm">Total Mutasi</p>
-            <h3 class="text-3xl font-bold mt-2">0</h3>
+            <h3 class="text-3xl font-bold mt-2">{{ number_format($totalMutasiHariIni) }}</h3>
         </div>
 
         <div class="bg-green-600 text-white p-5 rounded-lg">
             <p class="text-sm">Nilai Total Stok</p>
-            <h3 class="text-3xl font-bold mt-2">Rp 0</h3>
+            <h3 class="text-3xl font-bold mt-2">Rp {{ number_format($nilaiTotalStok, 0, ',', '.') }}</h3>
         </div>
-
     </div>
+
 
     <!-- CHARTS -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -52,6 +51,7 @@
 
     </div>
 
+    <!-- ===================== TRANSAKSI TERBARU ===================== -->
     <div class="bg-white p-5 rounded-lg shadow">
         <h3 class="font-semibold mb-4">Transaksi Terbaru</h3>
 
@@ -64,15 +64,23 @@
                     <th class="py-2">Customer</th>
                     <th class="py-2">Total Amount</th>
                     <th class="py-2">Status</th>
-                    <th class="py-2">Action</th>
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td colspan="7" class="text-center py-6 text-gray-400">
-                        Belum ada transaksi
-                    </td>
-                </tr>
+                @forelse ($transaksiTerbaru as $t)
+                    <tr class="border-b text-sm">
+                        <td class="py-2">{{ $t->kode }}</td>
+                        <td class="py-2">{{ \Carbon\Carbon::parse($t->tanggal)->format('d/m/Y') }}</td>
+                        <td class="py-2">{{ $t->besi->nama ?? '-' }}</td>
+                        <td class="py-2">{{ $t->customer->nama ?? '-' }}</td>
+                        <td class="py-2">Rp {{ number_format($t->harga * $t->berat, 0, ',', '.') }}</td>
+                        <td class="py-2">{{ $t->status == 'Barang Masuk' ? 'Pembelian' : ($t->status == 'Barang Keluar' ? 'Penjualan' : $t->status) }}</td>
+                    </tr>
+                @empty
+                    <tr>
+                        <td colspan="6" class="text-center py-6 text-gray-400">Belum ada transaksi</td>
+                    </tr>
+                @endforelse
             </tbody>
         </table>
     </div>

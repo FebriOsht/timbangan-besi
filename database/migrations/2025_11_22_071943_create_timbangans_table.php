@@ -21,10 +21,10 @@ return new class extends Migration
             $table->unsignedBigInteger('besi_id');
 
             // Berat yang ditimbang
-            $table->decimal('berat', 10, 2);
+            $table->integer('berat');
 
             // Harga per kg (disimpan supaya tidak berubah jika harga besi update)
-            $table->decimal('harga', 12, 2);
+            $table->integer('harga');
 
             // Status: Barang Masuk / Barang Keluar
             $table->enum('status', ['Barang Masuk', 'Barang Keluar'])->default('Barang Masuk');
