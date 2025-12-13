@@ -213,8 +213,17 @@ Route::get('/search-customer', [TimbanganController::class,'searchCustomer'])->n
     | STOCK OPNAME
     |--------------------------------------------------------------------------
     */
-    Route::get('/admin/stock-opname', [StockOpnameController::class, 'index'])
-        ->name('admin.stock-opname.index');
+    /*
+|--------------------------------------------------------------------------
+| STOCK OPNAME
+|--------------------------------------------------------------------------
+*/
+Route::get('/admin/stock-opname', [StockOpnameController::class, 'index'])
+    ->name('admin.stock-opname.index');
+
+Route::post('/admin/stock-opname', [StockOpnameController::class, 'store'])
+    ->name('admin.stock-opname.store');
+
 
 
     /*

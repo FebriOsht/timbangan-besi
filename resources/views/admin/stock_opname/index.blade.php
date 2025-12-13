@@ -1,191 +1,253 @@
 <x-admin-layout title="Stock Opname">
 
-<div 
-    x-data="{
-        selisihModal: false
-    }"
-    class="p-6 bg-white rounded-xl shadow-sm"
->
+<div x-data="stockOpname()" class="pb-20">
 
-    {{-- FORM INPUT --}}
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+    <!-- ============================ -->
+    <!-- HEADER -->
+    <!-- ============================ -->
+    <div class="flex justify-between mb-4">
+        <h2 class="text-xl font-bold">Stock Opname</h2>
 
-        {{-- Jenis Besi --}}
-        <div>
-            <label class="block font-semibold mb-1">Jenis Besi</label>
-            <select class="w-full border rounded-lg p-2">
-                <option value="">Pilih Jenis Besi</option>
-                <option>Besi</option>
-                <option>Besi Plat</option>
-                <option>Besi Siku</option>
-            </select>
-        </div>
-
-        {{-- Stok Fisik --}}
-        <div>
-            <label class="block font-semibold mb-1">Stok Fisik</label>
-            <input type="text" class="w-full border rounded-lg p-2" placeholder="Masukkan stok fisik">
-        </div>
-
-        {{-- Stok Sistem --}}
-        <div>
-            <label class="block font-semibold mb-1">Stok Sistem</label>
-            <input type="text" class="w-full border rounded-lg p-2" placeholder="Masukkan stok sistem">
-        </div>
-
-        {{-- Lokasi --}}
-        <div>
-            <label class="block font-semibold mb-1">Lokasi</label>
-            <select class="w-full border rounded-lg p-2">
-                <option>Gudang A</option>
-                <option>Gudang B</option>
-            </select>
-        </div>
-
-        {{-- Selisih --}}
-        <div>
-            <label class="block font-semibold mb-1">Selisih</label>
-            <input type="text" class="w-full border rounded-lg p-2" placeholder="Selisih otomatis">
-        </div>
-
-        {{-- Keterangan --}}
-        <div class="md:col-span-2">
-            <label class="block font-semibold mb-1">Keterangan</label>
-            <input type="text" class="w-full border rounded-lg p-2" placeholder="Tambahkan keterangan">
-        </div>
-
-    </div>
-
-    {{-- Tombol --}}
-    <div class="flex gap-4 mb-8">
-        <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-            Simpan
-        </button>
-
-        <button 
-            @click="selisihModal = true"
-            class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700"
-        >
-            Selisih
+        <button
+            @click="openModal()"
+            class="px-4 py-2 bg-green-700 hover:bg-green-800 text-white rounded-lg flex items-center gap-2">
+            <i class="fa-solid fa-plus"></i> Stock Opname
         </button>
     </div>
 
-    {{-- TABEL --}}
-    <div class="overflow-x-auto">
-        <table class="w-full border-collapse">
-            <thead>
-                <tr class="bg-green-600 text-white">
-                    <th class="p-3 text-left">No</th>
-                    <th class="p-3 text-left">Tanggal</th>
-                    <th class="p-3 text-left">Jenis</th>
-                    <th class="p-3 text-left">Stok Sistem</th>
-                    <th class="p-3 text-left">Stok Fisik</th>
-                    <th class="p-3 text-left">Selisih</th>
-                </tr>
-            </thead>
-            <tbody class="text-gray-700">
-                <tr class="border-b">
-                    <td class="p-3">1.</td>
-                    <td class="p-3">2025-05-01</td>
-                    <td class="p-3">Besi</td>
-                    <td class="p-3">1.800 kg</td>
-                    <td class="p-3">1.850 kg</td>
-                    <td class="p-3 text-green-600 font-bold">+50</td>
-                </tr>
-            </tbody>
-        </table>
+    <!-- ============================ -->
+    <!-- TABLE -->
+    <!-- ============================ -->
+    <div class="bg-white shadow rounded-xl p-6">
+        <h2 class="text-xl font-semibold mb-4">Data Stock Opname</h2>
+
+        <div class="overflow-x-auto border rounded-lg">
+            <table class="min-w-full text-left border-collapse">
+                <thead class="bg-green-600 text-white text-sm">
+                    <tr>
+                        <th class="px-4 py-2">Tanggal</th>
+                        <th class="px-4 py-2">Jenis Besi</th>
+                        <th class="px-4 py-2 text-right">Stok Sistem</th>
+                        <th class="px-4 py-2 text-right">Stok Fisik</th>
+                        <th class="px-4 py-2 text-right">Selisih</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    @forelse ($stockOpname as $row)
+                        <tr class="border-b hover:bg-gray-50">
+                            <td class="px-4 py-2">{{ $row->tanggal }}</td>
+                            <td class="px-4 py-2">
+                                {{ $row->besi->nama ?? '-' }}
+                                <span class="text-sm text-gray-500">
+                                    ({{ $row->besi->jenis ?? '-' }})
+                                </span>
+                            </td>
+                            <td class="px-4 py-2 text-right">
+                                {{ number_format($row->stok_sistem,0,',','.') }}
+                            </td>
+                            <td class="px-4 py-2 text-right">
+                                {{ number_format($row->stok_fisik,0,',','.') }}
+                            </td>
+                            <td class="px-4 py-2 text-right font-bold
+                                @if($row->selisih > 0) text-blue-600
+                                @elseif($row->selisih < 0) text-red-600
+                                @else text-green-600
+                                @endif">
+                                {{ $row->selisih }}
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="px-4 py-6 text-center text-gray-500">
+                                Belum ada data stock opname
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    {{-- Tombol Export --}}
-    <div class="flex justify-center gap-4 mt-8">
-        <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-            Eksport PDF
-        </button>
-
-        <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-            Eksport Excel
-        </button>
-
-        <button class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
-            Kirim ke Pabrik
-        </button>
-    </div>
-
-
-
-
-    {{-- ========================= --}}
-    {{--         MODAL SELISIH     --}}
-    {{-- ========================= --}}
-    <div 
-        x-show="selisihModal"
+    <!-- ============================ -->
+    <!-- MODAL FORM -->
+    <!-- ============================ -->
+    <div
+        x-show="isOpen"
         x-transition
-        class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
+        class="fixed inset-0 bg-black/50 flex items-center justify-center z-50"
     >
-        <div class="bg-white w-full max-w-lg p-6 rounded-lg shadow-lg relative">
+        <div
+            class="bg-white rounded-xl shadow-xl w-full max-w-3xl p-6"
+            @click.outside="isOpen = false"
+        >
 
-            {{-- Close Button --}}
-            <button 
-                @click="selisihModal = false"
-                class="absolute top-3 right-3 text-gray-500 hover:text-gray-700 text-xl">
-                &times;
-            </button>
+            <h2 class="text-xl font-bold mb-4">Stock Opname</h2>
 
-            <h2 class="text-xl font-semibold mb-4">Hitung Selisih Stock</h2>
+            <form action="{{ route('admin.stock-opname.store') }}" method="POST">
+                @csrf
 
-            {{-- FORM DALAM MODAL --}}
-            <div class="grid grid-cols-2 gap-4">
-                <div class="col-span-2">
-    <label class="block font-semibold mb-1">Jenis Besi</label>
-    <select class="w-full border rounded-lg p-2 bg-white">
-        <option value="">-- Pilih Jenis Besi --</option>
-        <option value="Besi Beton">Besi Beton</option>
-        <option value="Besi Hollow">Besi Hollow</option>
-        <option value="Besi Siku">Besi Siku</option>
-        <option value="Besi Plat">Besi Plat</option>
-    </select>
-</div>
+                <div class="grid grid-cols-2 gap-4">
 
+                    <!-- TANGGAL -->
+                    <div>
+                        <label class="font-semibold">Tanggal</label>
+                        <input
+                            type="date"
+                            name="tanggal"
+                            value="{{ date('Y-m-d') }}"
+                            class="w-full border p-2 rounded"
+                        >
+                    </div>
 
-                {{-- Stok Fisik --}}
-                <div>
-                    <label class="block font-semibold mb-1">Stok Fisik</label>
-                    <input type="number" class="w-full border rounded-lg p-2" placeholder="Stok Fisik">
+                    <!-- STOK FISIK -->
+                    <div>
+                        <label class="font-semibold">Stok Fisik</label>
+                        <input
+                            type="number"
+                            name="stok_fisik"
+                            x-model="stokFisik"
+                            @input="hitungSelisih"
+                            class="w-full border p-2 rounded"
+                        >
+                    </div>
+
+                    <!-- CARI BESI -->
+                    <div class="col-span-2 relative">
+                        <label class="font-semibold">Cari Jenis Besi</label>
+
+                        <input
+                            type="text"
+                            x-model="searchQuery"
+                            @input.debounce.300="searchBesi"
+                            class="w-full border p-2 rounded mb-1"
+                            placeholder="Ketik minimal 3 huruf..."
+                        >
+
+                        <input type="hidden" name="besi_id" x-model="besi_id">
+
+                        <div
+                            x-show="searchResults.length > 0"
+                            class="absolute border rounded bg-white shadow w-full max-h-40 overflow-y-auto z-50"
+                        >
+                            <template x-for="item in searchResults" :key="item.id">
+                                <div
+                                    class="p-2 hover:bg-gray-200 cursor-pointer"
+                                    @click="selectBesi(item)"
+                                >
+                                    <span x-text="item.jenis + ' | ' + item.nama"></span>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+
+                    <!-- STOK SISTEM -->
+                    <div>
+                        <label class="font-semibold">Stok Sistem</label>
+                        <input
+                            type="number"
+                            x-model="stokSistem"
+                            readonly
+                            class="w-full border p-2 rounded bg-gray-100"
+                        >
+                    </div>
+
+                    <!-- SELISIH -->
+                    <div>
+                        <label class="font-semibold">Selisih</label>
+                        <input
+                            type="number"
+                            name="selisih"
+                            x-model="selisih"
+                            readonly
+                            class="w-full border p-2 rounded font-bold"
+                            :class="{
+                                'text-blue-600': selisih > 0,
+                                'text-red-600': selisih < 0,
+                                'text-green-600': selisih == 0
+                            }"
+                        >
+                    </div>
+
                 </div>
 
-                {{-- Stok Sistem --}}
-                <div>
-                    <label class="block font-semibold mb-1">Stok Sistem</label>
-                    <input type="number" class="w-full border rounded-lg p-2" placeholder="Stok Sistem">
+                <div class="mt-6 flex justify-end gap-2">
+                    <button
+                        type="button"
+                        @click="isOpen = false"
+                        class="px-4 py-2 bg-gray-300 rounded-lg"
+                    >
+                        Batal
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-4 py-2 bg-green-700 text-white rounded-lg"
+                    >
+                        Simpan
+                    </button>
                 </div>
 
-                {{-- Hasil Selisih --}}
-                <div class="col-span-2">
-                    <label class="block font-semibold mb-1">Hasil Selisih</label>
-                    <input type="text" class="w-full border rounded-lg p-2 bg-gray-100" placeholder="+/- otomatis" disabled>
-                </div>
-
-            </div>
-
-            {{-- BUTTON --}}
-            <div class="mt-6 flex justify-end gap-3">
-                <button 
-                    @click="selisihModal = false"
-                    class="px-4 py-2 bg-gray-300 rounded-lg hover:bg-gray-400">
-                    Batal
-                </button>
-
-                <button 
-                    class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700">
-                    Simpan
-                </button>
-            </div>
-
+            </form>
         </div>
     </div>
 
-
-
-
 </div>
+
+<!-- =========================== -->
+<!-- ALPINE SCRIPT -->
+<!-- =========================== -->
+<script>
+function stockOpname() {
+    return {
+        isOpen: false,
+
+        searchQuery: '',
+        searchResults: [],
+        besi_id: null,
+
+        stokSistem: 0,
+        stokFisik: 0,
+        selisih: 0,
+
+        openModal() {
+            this.resetForm()
+            this.isOpen = true
+        },
+
+        resetForm() {
+            this.searchQuery = ''
+            this.searchResults = []
+            this.besi_id = null
+            this.stokSistem = 0
+            this.stokFisik = 0
+            this.selisih = 0
+        },
+
+        searchBesi() {
+            if (this.searchQuery.length < 3) {
+                this.searchResults = []
+                return
+            }
+
+            fetch(`{{ route('besi.search') }}?q=${this.searchQuery}`)
+                .then(res => res.json())
+                .then(data => this.searchResults = data)
+        },
+
+        selectBesi(item) {
+            this.searchQuery = `${item.jenis} | ${item.nama}`
+            this.besi_id = item.id
+            this.stokSistem = item.stok
+            this.searchResults = []
+            this.hitungSelisih()
+        },
+
+        hitungSelisih() {
+            this.selisih = this.stokSistem - (this.stokFisik || 0)
+        }
+    }
+}
+</script>
+
 </x-admin-layout>
