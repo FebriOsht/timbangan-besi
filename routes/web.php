@@ -24,8 +24,8 @@ use App\Http\Controllers\{
 // =====================
 // PUBLIC
 // =====================
-Route::get('/', fn () => view('welcome'));
-Route::get('/test', fn () => view('test'));
+Route::get('/', fn() => view('welcome'));
+Route::get('/test', fn() => view('test'));
 
 // =====================
 // REGISTER
@@ -42,6 +42,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->middleware('verified')
         ->name('dashboard');
+    Route::get('/dashboard/chart-data', [DashboardController::class, 'chartData'])
+        ->middleware('verified')
+        ->name('dashboard.chartData');
+    Route::get('/dashboard/jenis-besi-chart', [DashboardController::class, 'jenisBesiChart'])
+        ->middleware('verified')
+        ->name('dashboard.jenisBesiChart');
+
+
 
     // PROFILE
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -61,7 +69,8 @@ Route::middleware(['auth'])->group(function () {
             'destroy' => 'user.destroy',
         ]);
 
-        Route::post('user/{user}/reset-password',
+        Route::post(
+            'user/{user}/reset-password',
             [UserController::class, 'resetPassword']
         )->name('user.reset_password');
 
@@ -75,7 +84,7 @@ Route::middleware(['auth'])->group(function () {
 
         // CUSTOMER
         Route::resource('customer', CustomerController::class)
-            ->only(['index','store','update','destroy'])
+            ->only(['index', 'store', 'update', 'destroy'])
             ->names([
                 'index' => 'customer',
                 'store' => 'customer.store',
@@ -92,7 +101,7 @@ Route::middleware(['auth'])->group(function () {
 
         // BESI
         Route::resource('besi', BesiController::class)
-            ->only(['index','store','update','destroy'])
+            ->only(['index', 'store', 'update', 'destroy'])
             ->names([
                 'index' => 'besi',
                 'store' => 'besi.store',
@@ -154,7 +163,8 @@ Route::middleware(['auth'])->group(function () {
         ->name('admin.stock-opname.store');
 
     // ✅ ROUTE YANG DIBUTUHKAN (BESI BY PABRIK)
-    Route::get('/api/besi-by-pabrik/{pabrik}',
+    Route::get(
+        '/api/besi-by-pabrik/{pabrik}',
         [StockOpnameController::class, 'besiByPabrik']
     )->name('besi.by-pabrik');
 
@@ -181,4 +191,4 @@ Route::resource('products', ProductController::class);
 // =====================
 // AUTH DEFAULT
 // =====================
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

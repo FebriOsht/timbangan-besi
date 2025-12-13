@@ -35,19 +35,25 @@
     <!-- CHARTS -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
-        <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="font-semibold mb-3">Berat Masuk vs Berat Keluar</h3>
-            <div class="w-full h-64 flex items-center justify-center text-gray-400 border border-dashed rounded">
-                Chart Placeholder
-            </div>
+            <!-- Bar Chart: Berat Masuk vs Keluar -->
+    <div class="bg-white p-5 rounded-lg shadow">
+
+        <h3 class="font-semibold text-gray-800 mb-3">
+            Berat Masuk vs Berat Keluar (7 Hari Terakhir)
+        </h3>
+
+        <div class="relative w-full h-64">
+            <canvas id="beratChart"></canvas>
         </div>
+    </div>
 
         <div class="bg-white p-5 rounded-lg shadow">
-            <h3 class="font-semibold mb-3">Proporsi Jenis Besi</h3>
-            <div class="w-full h-64 flex items-center justify-center text-gray-400 border border-dashed rounded">
-                Donut Chart Placeholder
-            </div>
-        </div>
+    <h3 class="font-semibold mb-3">Proporsi Jenis Besi</h3>
+    <div class="relative w-full h-64">
+        <canvas id="jenisBesiChart"></canvas>
+    </div>
+</div>
+
 
     </div>
 
@@ -84,5 +90,103 @@
             </tbody>
         </table>
     </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const ctx = document.getElementById('beratChart').getContext('2d');
+
+    const chart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [],
+            datasets: [
+                {
+                    label: 'Barang Masuk',
+                    data: [],
+                    backgroundColor: '#16a34a'
+                },
+                {
+                    label: 'Barang Keluar',
+                    data: [],
+                    backgroundColor: '#dc2626'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        precision: 0
+                    }
+                }
+            }
+        }
+    });
+
+    // Load data
+    fetch('/dashboard/chart-data')
+        .then(res => res.json())
+        .then(data => {
+            console.log('CHART DATA:', data);
+            chart.data.labels = data.labels;
+            chart.data.datasets[0].data = data.masuk;
+            chart.data.datasets[1].data = data.keluar;
+            chart.update();
+        })
+        .catch(err => console.error('Error loading chart data:', err));
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ===== DONUT CHART JENIS BESI =====
+    const jenisCtx = document.getElementById('jenisBesiChart').getContext('2d');
+
+    const jenisChart = new Chart(jenisCtx, {
+        type: 'doughnut',
+        data: {
+            labels: [],
+            datasets: [{
+                data: [],
+                backgroundColor: [
+                    '#16a34a',
+                    '#22c55e',
+                    '#4ade80',
+                    '#86efac',
+                    '#bbf7d0',
+                    '#dcfce7'
+                ]
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    fetch('/dashboard/jenis-besi-chart')
+        .then(res => res.json())
+        .then(data => {
+            console.log('JENIS BESI CHART:', data);
+            jenisChart.data.labels = data.labels;
+            jenisChart.data.datasets[0].data = data.data;
+            jenisChart.update();
+        })
+        .catch(err => console.error(err));
+
+});
+</script>
+
+
 
 </x-admin-layout>
