@@ -1,4 +1,5 @@
-<aside class="w-64 bg-green-700 text-white min-h-screen p-5">
+<aside class="fixed top-0 left-0 w-64 h-screen bg-green-700 text-white p-5">
+
     <h1 class="text-2xl font-bold mb-8">LOGO</h1>
 
     <ul class="space-y-3">

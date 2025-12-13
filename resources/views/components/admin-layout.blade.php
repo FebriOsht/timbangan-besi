@@ -20,7 +20,8 @@
     <x-sidebar />
 
     {{-- MAIN CONTENT --}}
-    <div class="flex-1">
+    <div class="flex-1 ml-64">
+
 
 {{-- TOP NAV --}}
 <header class="bg-white shadow px-6 py-4 flex justify-between items-center sticky top-0 z-50">
