@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class Pabrik extends Model
 {
     protected $fillable = ['kode_pabrik','nama', 'alamat', 'rekening', 'kontak'];
+        
+    public function besi()
+    {
+        return $this->hasMany(Besi::class);
+    }
 }

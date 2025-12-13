@@ -32,4 +32,9 @@ class StockOpname extends Model
     {
         return ($this->besi->stok ?? 0) - $this->stok_fisik;
     }
+
+    public function pabrik()
+{
+    return $this->belongsTo(Pabrik::class);
+}
 }

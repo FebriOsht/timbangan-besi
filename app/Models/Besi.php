@@ -13,6 +13,11 @@ class Besi extends Model
         'nama',
         'jenis',
         'harga',
-        'stok'
+        'stok',
+        'pabrik_id'
     ];
+        public function pabrik()
+    {
+        return $this->belongsTo(Pabrik::class);
+    }
 }
