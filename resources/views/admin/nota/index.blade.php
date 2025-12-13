@@ -153,8 +153,12 @@
             </template>
         </div>
 
+        <!-- 🔥 WAJIB AGAR TERKIRIM KE BACKEND -->
+        <input type="hidden" name="diskon_id" x-model="diskonId">
+
     </div>
 </div>
+
 
 
  <!-- RINGKASAN TOTAL -->
@@ -521,6 +525,8 @@ function nota() {
 
         diskonPersen: 0,
         diskonNama: "",
+        diskonId: null,
+
 
         // ==========================
         // FUNGSI DISKON
@@ -536,11 +542,13 @@ function nota() {
         },
 
         pilihDiskon(d) {
-            this.diskonTerpilih = d;
-            this.diskonNama = d.nama;
-            this.diskonPersen = d.potongan;
-            this.openDiskonModal = false;
-        },
+    this.diskonTerpilih = d;
+    this.diskonId = d.id;            // ← WAJIB
+    this.diskonNama = d.nama;
+    this.diskonPersen = d.potongan;
+    this.openDiskonModal = false;
+},
+
 
         simpanDiskonManual() {
             fetch("{{ route('master.diskon.store') }}", {
@@ -598,6 +606,8 @@ function nota() {
                 besi_id: besiId,
                 timbangan_id: timbanganId,
                 jenis_nota: this.jenisNota,
+                diskon_id: this.diskonId,
+
             };
 
             try {

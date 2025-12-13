@@ -2,38 +2,33 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Nota extends Model
 {
-    use HasFactory;
-
-    protected $table = 'notas';
-
     protected $fillable = [
         'kode_nota',
-        'besi_id',
-        'timbangan_id',
+        'tanggal_nota',
+        'jenis_nota',
+        'ppn',
         'customer_id',
         'pabrik_id',
         'user_id',
         'jenis_pembayaran',
-        'total_bayar',
-        'tanggal_nota',
-        'jenis_nota',
-        'ppn',
     ];
 
-    // RELASI
-    public function besi()
+    // =====================
+    // RELASI UTAMA
+    // =====================
+
+    public function details()
     {
-        return $this->belongsTo(Besi::class);
+        return $this->hasMany(NotaDetail::class);
     }
 
-    public function timbangan()
+    public function diskons()
     {
-        return $this->belongsTo(Timbangan::class);
+        return $this->hasMany(NotaDiskon::class);
     }
 
     public function customer()

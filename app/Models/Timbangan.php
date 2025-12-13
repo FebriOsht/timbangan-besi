@@ -37,4 +37,9 @@ class Timbangan extends Model
     {
         return $this->belongsTo(\App\Models\Pabrik::class);
     }
+    public function nota()
+    {
+        return $this->hasOneThrough(Nota::class, NotaDetail::class, 'timbangan_id', 'id', 'id', 'nota_id');
+    }
+
 }
