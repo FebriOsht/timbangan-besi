@@ -33,29 +33,38 @@
 
 
     <!-- CHARTS -->
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
 
-            <!-- Bar Chart: Berat Masuk vs Keluar -->
+    <!-- BAR CHART -->
     <div class="bg-white p-5 rounded-lg shadow">
+        <div class="flex justify-between items-center mb-3">
+            <h3 class="font-semibold text-gray-800">
+                Berat Masuk vs Berat Keluar
+            </h3>
 
-        <h3 class="font-semibold text-gray-800 mb-3">
-            Berat Masuk vs Berat Keluar (7 Hari Terakhir)
-        </h3>
+            <select id="filterChart"
+                class="border rounded px-3 py-1 text-sm focus:outline-none focus:ring focus:ring-green-300">
+                <option value="harian" selected>Harian</option>
+                <option value="mingguan">Mingguan</option>
+                <option value="bulanan">Bulanan</option>
+            </select>
+        </div>
 
         <div class="relative w-full h-64">
             <canvas id="beratChart"></canvas>
         </div>
     </div>
 
-        <div class="bg-white p-5 rounded-lg shadow">
-    <h3 class="font-semibold mb-3">Proporsi Jenis Besi</h3>
-    <div class="relative w-full h-64">
-        <canvas id="jenisBesiChart"></canvas>
+    <!-- DONUT CHART -->
+    <div class="bg-white p-5 rounded-lg shadow">
+        <h3 class="font-semibold mb-3">Proporsi Jenis Besi</h3>
+        <div class="relative w-full h-64">
+            <canvas id="jenisBesiChart"></canvas>
+        </div>
     </div>
+
 </div>
 
-
-    </div>
 
     <!-- ===================== TRANSAKSI TERBARU ===================== -->
     <div class="bg-white p-5 rounded-lg shadow">
@@ -93,10 +102,12 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const ctx = document.getElementById('beratChart').getContext('2d');
+document.addEventListener('DOMContentLoaded', function () {
 
-    const chart = new Chart(ctx, {
+    const ctx = document.getElementById('beratChart').getContext('2d');
+    const filterSelect = document.getElementById('filterChart');
+
+    const beratChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: [],
@@ -119,27 +130,46 @@ document.addEventListener('DOMContentLoaded', function() {
             scales: {
                 y: {
                     beginAtZero: true,
-                    ticks: {
-                        precision: 0
-                    }
+                    ticks: { precision: 0 }
                 }
             }
         }
     });
 
-    // Load data
-    fetch('/dashboard/chart-data')
-        .then(res => res.json())
-        .then(data => {
-            console.log('CHART DATA:', data);
-            chart.data.labels = data.labels;
-            chart.data.datasets[0].data = data.masuk;
-            chart.data.datasets[1].data = data.keluar;
-            chart.update();
-        })
-        .catch(err => console.error('Error loading chart data:', err));
+    function loadChartData(filter = 'harian') {
+        fetch(`/dashboard/chart-data?filter=${filter}`)
+            .then(res => res.json())
+            .then(data => {
+
+                beratChart.data.labels = data.labels;
+                beratChart.data.datasets[0].data = data.masuk;
+                beratChart.data.datasets[1].data = data.keluar;
+
+                // === AUTO Y MAX + 10% ===
+                const allValues = [...data.masuk, ...data.keluar];
+                const maxValue = Math.max(...allValues);
+
+                beratChart.options.scales.y.max = maxValue > 0
+                    ? Math.ceil(maxValue * 1.1)
+                    : 10;
+
+                beratChart.update();
+            })
+            .catch(err => console.error(err));
+    }
+
+    // LOAD DEFAULT
+    loadChartData('harian');
+
+    // EVENT FILTER CHANGE
+    filterSelect.addEventListener('change', function () {
+        loadChartData(this.value);
+    });
+
 });
 </script>
+
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
